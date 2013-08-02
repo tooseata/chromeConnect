@@ -87,7 +87,7 @@ io.sockets.on('disconnect', function(data){
 // }
 // setInterval(tick, 1000);
 
-server.listen(9999);
+server.listen(80);
 
 
 

@@ -1,4 +1,4 @@
-var socketserver = 'http://127.0.0.1:9999';
+var socketserver = 'http://chromeconnect.nodejitsu.com:80';
 
 // while (typeof window.io !== 'undefined') {
 //     debugger;

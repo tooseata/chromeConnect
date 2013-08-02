@@ -20,8 +20,7 @@
 
     <script type="text/javascript">
     
-      //var isMobileDevice = navigator.userAgent.toLowerCase().search(/iphone|ipod|ipad/) != -1;
-      var socketUrl = 'http://' + location.hostname + ':9999';
+      var socketUrl = 'http://' + location.hostname + ':80';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
 
@@ -52,14 +51,12 @@
           if(data){
             alert('Authorized');
             var sessionHash = data;
-            alert(sessionHash);
             // Touchable jQuery 
             $(function() {
               $("#test").swipe( {
                 swipe:function(event, direction, distance, duration, fingerCount) {
                 $("#test").text("You swiped " + direction + " with " + fingerCount + " fingers");
                   socket.emit('swipeDirection', {"direction" : direction,"sessionHash":sessionHash});
-                  alert("Emitted Swipe!");
                 },
                 threshold:0,
                 fingers:'all'

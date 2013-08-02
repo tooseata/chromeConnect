@@ -1,13 +1,17 @@
 {
   "name": "chromeConnect",
-  "version": "0.0.1-1",
+  "version": "0.0.1-7",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.2.6",
-    "jade": "*"
+    "express": "*",
+    "jade": "*",
+    "url": "*",
+    "underscore": "*",
+    "socket.io": "*",
+    "prompt": "*"
   },
   "subdomain": "chromeConnect",
   "engines": {
