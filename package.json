@@ -1,5 +1,5 @@
 {
-  "name": "application-name",
+  "name": "chromeConnect",
   "version": "0.0.1-1",
   "private": true,
   "scripts": {
@@ -11,6 +11,6 @@
   },
   "subdomain": "chromeConnect",
   "engines": {
-    "node": "0.10.x"
+    "node": "0.8.*"
   }
 }
