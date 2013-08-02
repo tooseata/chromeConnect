@@ -1,0 +1,31 @@
+{
+  "name": "Fun With Sockets",
+
+  "version": "1.7",
+
+  "manifest_version": 2,
+
+  "description": "Web Socket Browser Control",
+
+  "browser_action": {
+    "default_title": "Configure Stuf",
+    "default_icon": "icons/icon.png", 
+    "default_popup": "browseraction/popup.html"
+  },
+
+  "background":{
+    "page" : "backgroundApp/background.html", 
+    "persistent": true
+  }, 
+
+  "permissions": ["tabs","activeTab"],
+
+  "content_scripts":[
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["script.js"]
+    }
+  ], 
+
+  "web_accessible_resources": ["backgroundApp/socketio.js", "backgroundApp/background.js"]
+}

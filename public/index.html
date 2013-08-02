@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+    <link href="stylesheets/main.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.touchSwipe.js"></script>
+    <script type="text/javascript" src="/javascripts/modernizr-sockets-touchevents.js"></script>
+    <script type="text/javascript" src="javascripts/main.js"></script>
+
+ 
+  </head>
+  <body>
+
+    <script type="text/javascript">
+    
+      //var isMobileDevice = navigator.userAgent.toLowerCase().search(/iphone|ipod|ipad/) != -1;
+      var socketUrl = 'http://' + location.hostname + ':9999';
+      var isMobileDevice = Modernizr.touch;
+      var socket = io.connect(socketUrl);
+
+      socket.on('connecting', function () {
+        console.log('Setting Up connection');
+      });
+
+      socket.on('error', function () {
+        console.log('error');
+      });
+    
+      // Check Device Type
+      socket.on('checkDevice', function () {
+        console.log("connected!");
+        // Using modernizr feature detection for mobile touch events
+        if(isMobileDevice){
+          isTouchable();
+        } else{
+          isNotTouchable();
+        }
+      }); // main check
+
+
+      var isTouchable = function(){
+        var sessionHash = prompt('Please enter the code:');
+        socket.emit('initiateController', {sessionHash: sessionHash});
+        socket.on('controllerAuthorization', function (data) {
+          if(data){
+            alert('Authorized');
+            var sessionHash = data;
+            alert(sessionHash);
+            // Touchable jQuery 
+            $(function() {
+              $("#test").swipe( {
+                swipe:function(event, direction, distance, duration, fingerCount) {
+                $("#test").text("You swiped " + direction + " with " + fingerCount + " fingers");
+                  socket.emit('swipeDirection', {"direction" : direction,"sessionHash":sessionHash});
+                  alert("Emitted Swipe!");
+                },
+                threshold:0,
+                fingers:'all'
+              });
+            });
+          } else{
+            socket.disconnect();
+            alert('You have been disconnected. Wrong Key');
+          }
+        });
+
+      } // is Mobile 
+      var isNotTouchable = function() {
+        console.log('DESKTOP');
+      } // is Desktop 
+
+    </script>
+
+    <div class="container">
+      <div id="test" class="box">Swipe me with different combinations of fingers</div>
+    </div>
+
+  </body>
+</html>
