@@ -20,7 +20,7 @@
 
     <script type="text/javascript">
     
-      var socketUrl = 'http://' + location.hostname + ':80';
+      var socketUrl = 'http://' + location.hostname + ':8080';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
 
@@ -52,16 +52,47 @@
             alert('Authorized');
             var sessionHash = data;
             // Touchable jQuery 
-            $(function() {
-              $("#test").swipe( {
-                swipe:function(event, direction, distance, duration, fingerCount) {
-                $("#test").text("You swiped " + direction + " with " + fingerCount + " fingers");
-                  socket.emit('swipeDirection', {"direction" : direction,"sessionHash":sessionHash});
+            $(function() {      
+              $("#controllerPad").swipe( {
+
+                swipeStatus:function(event, phase, direction, distance , duration , fingerCount) {
+                   $(this).find('#statusBox').text("swiped " + distance + ' px');
+                   if(phase === $.fn.swipe.phases.PHASE_END || phase === $.fn.swipe.phases.PHASE_CANCEL) {
+                      // no swipe
+                    } else{
+                        socket.emit('swipeStatus', {"distance" : distance, "sessionHash": sessionHash});
+                    }
+                   
                 },
-                threshold:0,
-                fingers:'all'
+
+                pinchStatus:function(event, phase, direction, distance , duration , fingerCount, pinchZoom) {
+                  $(this).find('#statusBox').text("pinched " + distance + " px ");
+                  if(phase === $.fn.swipe.phases.PHASE_END || phase === $.fn.swipe.phases.PHASE_CANCEL) {
+                      // no pinch
+                  } else{
+                      socket.emit('pinchStatus', {"distance" : distance, "sessionHash": sessionHash});
+                  }
+                  
+                },
+
+                swipe:function(event, direction, distance, duration, fingerCount) {
+                   $(this).find('#statusBox').text("You swiped " + direction + " with " + fingerCount + " fingers");
+                   socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "sessionHash": sessionHash});
+                },
+
+                pinchIn:function(event, direction, distance, duration, fingerCount, pinchZoom) {
+                  $(this).find('#statusBox').text("You pinched " +direction + " by " + distance +"px, zoom scale is "+pinchZoom);
+                  socket.emit('pinchIn', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom});
+                },
+
+                pinchOut:function(event, direction, distance, duration, fingerCount, pinchZoom) {
+                  $(this).find('#statusBox').text("You pinched " +direction + " by " + distance +"px, zoom scale is "+pinchZoom);
+                  socket.emit('pinchOut', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom});
+                },
+
+                fingers:$.fn.swipe.fingers.ALL  
               });
-            });
+            }); // Touchable jQuery 
           } else{
             socket.disconnect();
             alert('You have been disconnected. Wrong Key');
@@ -76,7 +107,8 @@
     </script>
 
     <div class="container">
-      <div id="test" class="box">Swipe me with different combinations of fingers</div>
+      <div id="controllerPad" class="box">Swipe me with different combinations of fingers</div>
+      <div id="statusBox"></div>
     </div>
 
   </body>

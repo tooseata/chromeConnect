@@ -1,18 +1,29 @@
-var socketserver = 'http://chromeconnect.nodejitsu.com:80';
+//var socketserver = 'http://chromeconnect.nodejitsu.com:80';
+var socketserver = 'http://127.0.0.1:8080';
+var channelTabs = [];
+var activeTab;
 
-// while (typeof window.io !== 'undefined') {
-//     debugger;
-//     var socket = io.connect(socketserver);
-//     socket.on('connect', function () {
-//        // When we receive our game code, show the user
-//       socket.on("desktopAccessToken", function(gameCode){
-//         console.log("Game Code ________: " + gameCode);
-//          // $("#gameConnect").show();
-//          // $("#gameCode").html(gameCode);
-//       });
-//     });
-// }
-// listening for an event / one-time requests
+chrome.extension.onConnect.addListener(function(port) {
+        var tabId = port.sender.tab.id;
+        console.log('Received request from content script', port);
+
+        // add tab when opened
+        if (channelTabs.indexOf(tabId) == -1) {
+          channelTabs.push(tabId);
+        }
+
+        // remove when closed/directed to another url
+        port.onDisconnect.addListener(function() {
+          channelTabs.splice(channelTabs.indexOf(tabId), 1);
+        });
+});
+
+chrome.tabs.onActivated.addListener(function(info) {
+  console.log('My Tab Changed');
+  if(info){
+    activeTab = info.tabId;
+  }
+});
 
 // coming from the popup
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -25,28 +36,18 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
         case "disconnectSocketConnection":
+        socketConnection(request.type, request.tabID, request.windowID);
+        chrome.browserAction.setBadgeText({text: ""});
         break;
 
     }
     return true;
 });
 
-// // listening for an event / long-lived connections
-// // coming from devtools
-// chrome.extension.onConnect.addListener(function (port) {
-//     port.onMessage.addListener(function (message) {
-//         switch(port.name) {
-//       case "color-divs-port":
-//         colorDivs();
-//       break;
-//     }
-//     });
-// });
 
 var socketConnection = function(type, tabID, windowID) {
-
+  var socket = io.connect(socketserver);
   if(type === 'loadSocketConnection'){
-    var socket = io.connect(socketserver);
     socket.on('connecting', function () {
         console.log('Setting Up connection');
     });
@@ -64,34 +65,53 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('linkMobileDevice', function(data){
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, data, function(response){
-          console.log(response.farewell);
+
+      for(var i = 0, len = channelTabs.length; i < len; i++) {
+        chrome.tabs.get(channelTabs[i], function(tab) {
+          if(tab.active === true){
+            activeTab = tab.id;
+          }
         });
-      });
-
-      // chrome.extension.onMessage.addListener(function(port){
-      //     if(port.name == 'my-channel'){
-      //         port.onMessage.addListener(function(msg){
-      //             port.postMessage({question: "Who's there?"});
-      //             console.log(msg);
-      //         });
-      //     }
-      // });
+      }
+      chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
       chrome.browserAction.setBadgeText({text: "Live"});
-      console.log("Passthough: ", data);
+      console.log("Verify: ", data);
     });
 
-    socket.on('swipeDirective', function(data){
-      console.log(data.direction);
+    socket.on('swipe', function(data){
+      console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers");
     });
-} // End socketConnection
 
-// send a message to the content script
-var loadSocketsLibary = function() {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {type: "loadSocketIO"});
-    chrome.browserAction.setBadgeText({text: "connected!"});
-  });
-};
-};
+    socket.on('swipeStatus', function(data){
+      console.log("Swiped " + data.distance + ' px');
+      var notificationType = {"swipeStatus": data.distance};
+      chrome.tabs.sendMessage(activeTab, notificationType);
+
+    });
+
+    socket.on('pinchStatus', function(data){
+      console.log("Pinched " + data.distance + ' px');
+    });
+
+    socket.on('pinchIn', function(data){
+      console.log("You pinched " + data.direction + " by " + data.distance +"px, zoom scale is "+ data.pinchZoom);
+    });
+
+    socket.on('pinchOut', function(data){
+      console.log("You pinched " + data.direction + " by " + data.distance +"px, zoom scale is "+ data.pinchZoom);
+    });
+  } else if(type === 'disconnectSocketConnection'){
+      socket.disconnect();
+      console.log('You Have Been Disconnected');
+  } 
+
+};// End socketConnection
+
+
+// // send a message to the content script
+// var loadSocketsLibary = function() {
+//   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//     chrome.tabs.sendMessage(tabs[0].id, {type: "loadSocketIO"});
+//     chrome.browserAction.setBadgeText({text: "connected!"});
+//   });
+// };

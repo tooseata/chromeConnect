@@ -53,29 +53,51 @@ io.sockets.on('connection', function(socket){
        // emit to Desktop Pair
        socketCodes[isValidSession].emit("linkMobileDevice", {test:"We Are Connected to Phone"});
        socket.emit("controllerAuthorization", isValidSession);
-       socket.on('swipeDirection', function(data){
-         var token = data.sessionHash;
-         console.log('Swipe Direction Token ______' + token);
-         if(token in socketCodes){
-          socketCodes[token].emit("swipeDirective", {"direction": data.direction});
-          console.log(data.direction);
-         }
-       });
-
     } else {
        socket.emit("controllerAuthorization", false);
       }
   }); // initiateController connection 
 
+  socket.on('swipe', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("swipe", {"direction": data.direction, "fingerCount" : data.fingerCount});
+    }
+  });
 
+  socket.on('swipeStatus', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("swipeStatus", {"distance": data.distance});
+    }
+  });
 
+  socket.on('pinchStatus', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("pinchStatus", {"distance": data.distance});
+    }
+  });
 
+  socket.on('pinchIn', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.pinchZoom });
+    }
+  });
+
+  socket.on('pinchOut', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("pinchOut", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.pinchZoom });
+    }
+  });
 }); // Main Connect
 
-
-
-io.sockets.on('disconnect', function(data){
-
+io.sockets.on('disconnect', function(socket){
+  if(socket.browserToken in socketCodes){
+     delete socketCodes[socket.browserToken];
+   }
 }); // Main Disconnect 
 
 
@@ -87,7 +109,7 @@ io.sockets.on('disconnect', function(data){
 // }
 // setInterval(tick, 1000);
 
-server.listen(80);
+server.listen(8080);
 
 
 
