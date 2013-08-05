@@ -10,27 +10,71 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 var pageScroll = function(direction,distance,duration){
+
+  distance = (distance * 1.5);
+
   if (direction === "up"){
     if(self.pageYOffset === 0){
       return;
     } else {
-      self.scrollBy(0, -(distance) * 2);
+      smoothScroll(-Math.abs(distance));
     }
   } else if (direction === "down"){
-      self.scrollBy(0, distance * 2);
+      smoothScroll(distance);
   } else {
     // TODO
     // Check mouse pointer focus if side scrolling is accepted. 
   }
 };
 
-var pageToporBottom = function(direction, duration){
-  if (direction === "up"){
-    self.scrollTo(document.body.scrollHeight,0);
-  } else if (direction === "down"){
-    self.scrollTo(0,document.body.scrollHeight);
+function smoothScroll(distance) {
+  var startY   = self.pageYOffset 
+  var distance = distance + startY
+  var stopY    = distance;
+  if (distance < 25) {
+    scrollTo(0, stopY); return;
   }
+  var speed = Math.round(distance / 100);
+  if (speed >= 20) speed = 20;
+  var step  = Math.round(distance / 25);
+  var leapY = stopY > startY ? startY + step : startY - step;
+  var timer = 0;
+  if (stopY > startY) {
+    for (var i=startY; i<stopY; i+=step ) {
+      setTimeout("self.scrollTo(0, "+leapY+")", timer * speed);
+      leapY += step; if (leapY > stopY) leapY = stopY; timer++;
+    } return;
+  }
+  for (var i=startY; i>stopY; i-=step ) {
+    setTimeout("self.scrollTo(0, "+leapY+")", timer * speed);
+    leapY -= step; if (leapY < stopY) leapY = stopY; timer++;
+  }
+}
+
+var pageToporBottom = function(direction, duration){
+  var scrollSpeed = duration < 200 ? -600 : -400;
+  var timeOut;
+  if (direction === "up"){
+    scrollToTop();
+    function scrollToTop(){
+     if (document.body.scrollTop!==0 || document.documentElement.scrollTop!==0){
+       self.scrollBy(0,scrollSpeed);
+       timeOut=setTimeout(scrollToTop,10);
+     } else {
+       clearTimeout(timeOut);
+     }
+    }
+  } else if (direction === "down"){
+      scrollSpeed = Math.abs(scrollSpeed);
+      scrollToBottom();
+      function scrollToBottom(){
+        var pageHeightDiff = Math.max(document.documentElement.scrollTop,document.body.scrollTop);
+        if ((pageHeightDiff+document.documentElement.clientHeight)!== document.documentElement.scrollHeight){
+          self.scrollBy(0,scrollSpeed);
+          timeOut=setTimeout(scrollToBottom,10);
+        } else {
+         clearTimeout(timeOut);
+          }
+      }
+    }
 };
-
-
-
