@@ -20,7 +20,7 @@
 
     <script type="text/javascript">
     
-      var socketUrl = 'http://' + location.hostname + ':8080';
+      var socketUrl = 'http://' + location.hostname + ':80';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
 
@@ -77,7 +77,7 @@
 
                 swipe:function(event, direction, distance, duration, fingerCount) {
                    $(this).find('#statusBox').text("You swiped " + direction + " with " + fingerCount + " fingers");
-                   socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "sessionHash": sessionHash});
+                   socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "distance":distance, "duration":duration, "sessionHash": sessionHash});
                 },
 
                 pinchIn:function(event, direction, distance, duration, fingerCount, pinchZoom) {
@@ -108,7 +108,10 @@
 
     <div class="container">
       <div id="controllerPad" class="box">Swipe me with different combinations of fingers</div>
-      <div id="statusBox"></div>
+      <div id="statusBox">
+        <p>Two Finger swipe Up / Down = Move in direction the amount of swiped pixels</p>
+        <p>Three Finger swipe Up / Down = Move to top / bottom of page depending on swipe direction</p>
+      </div>
     </div>
 
   </body>

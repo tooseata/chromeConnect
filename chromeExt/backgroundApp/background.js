@@ -1,5 +1,5 @@
-//var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-var socketserver = 'http://127.0.0.1:8080';
+var socketserver = 'http://chromeconnect.nodejitsu.com:80';
+//var socketserver = 'http://127.0.0.1:8080';
 var channelTabs = [];
 var activeTab;
 
@@ -79,13 +79,15 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('swipe', function(data){
-      console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers");
+      var notificationType = {"type": "swipe", "swipeDirection":data.direction, "fingerCount":data.fingerCount, "swipeDuration": data.duration, "swipDistance":data.distance};
+      console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
+      chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('swipeStatus', function(data){
       console.log("Swiped " + data.distance + ' px');
-      var notificationType = {"swipeStatus": data.distance};
-      chrome.tabs.sendMessage(activeTab, notificationType);
+      //var notificationType = {"type": "swipe"};
+      //chrome.tabs.sendMessage(activeTab, notificationType);
 
     });
 
@@ -94,11 +96,11 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('pinchIn', function(data){
-      console.log("You pinched " + data.direction + " by " + data.distance +"px, zoom scale is "+ data.pinchZoom);
+      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.pinchZoom);
     });
 
     socket.on('pinchOut', function(data){
-      console.log("You pinched " + data.direction + " by " + data.distance +"px, zoom scale is "+ data.pinchZoom);
+      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.pinchZoom);
     });
   } else if(type === 'disconnectSocketConnection'){
       socket.disconnect();

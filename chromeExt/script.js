@@ -1,37 +1,36 @@
-// Custom Connection 
-console.log('Hello, I was injected by Chrome Plugin');
-
-var testFunc = function(direction){
-  console.log(direction);
-}
-
-
-// chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-//   switch(message.type) {
-//     case "loadSocketIO":
-//     console.log('Load a browser DOM related');
-//     break;
-//   }
-// });
-
-// port.postMessage({myProp: "Current Tab Connected"});
-// port.onMessage.addListener(function(msg){
-//     testFunc(msg);
-// });
-
-// chrome.runtime.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-//     console.log(sender.tab ?
-//                 "from a content script:" + sender.tab.url :
-//                 "from the extension");
-//     if (request.greeting == "hello")
-//       sendResponse({farewell: "goodbye"});
-//   });
-
+// Tab connection handeler 
 var port = chrome.runtime.connect();
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.swipeStatus) {
-    testFunc(request.swipeStatus);
+  if (request.type === "swipe" && request.fingerCount === 2) {
+    pageScroll(request.swipeDirection, request.swipDistance, request.swipeDuration);
+  } else if(request.type === "swipe" && request.fingerCount === 3){
+    pageToporBottom(request.swipeDirection, request.swipDistance, request.swipeDuration);
   }
 });
+
+var pageScroll = function(direction,distance,duration){
+  if (direction === "up"){
+    if(self.pageYOffset === 0){
+      return;
+    } else {
+      self.scrollBy(0, -(distance) * 2);
+    }
+  } else if (direction === "down"){
+      self.scrollBy(0, distance * 2);
+  } else {
+    // TODO
+    // Check mouse pointer focus if side scrolling is accepted. 
+  }
+};
+
+var pageToporBottom = function(direction, duration){
+  if (direction === "up"){
+    self.scrollTo(document.body.scrollHeight,0);
+  } else if (direction === "down"){
+    self.scrollTo(0,document.body.scrollHeight);
+  }
+};
+
+
+

@@ -61,15 +61,15 @@ io.sockets.on('connection', function(socket){
   socket.on('swipe', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
-      socketCodes[token].emit("swipe", {"direction": data.direction, "fingerCount" : data.fingerCount});
+      socketCodes[token].emit("swipe", {"direction": data.direction, "fingerCount" : data.fingerCount, "distance":data.distance, "duration":data.duration});
     }
   });
 
   socket.on('swipeStatus', function(data){
     var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("swipeStatus", {"distance": data.distance});
-    }
+    // if(token in socketCodes){
+    //   socketCodes[token].emit("swipeStatus", {"distance": data.distance});
+    // }
   });
 
   socket.on('pinchStatus', function(data){
@@ -109,7 +109,7 @@ io.sockets.on('disconnect', function(socket){
 // }
 // setInterval(tick, 1000);
 
-server.listen(8080);
+server.listen(80);
 
 
 
