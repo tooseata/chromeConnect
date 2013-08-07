@@ -82,14 +82,14 @@ io.sockets.on('connection', function(socket){
   socket.on('pinchIn', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
-      socketCodes[token].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.pinchZoom });
+      socketCodes[token].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
     }
   });
 
   socket.on('pinchOut', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
-      socketCodes[token].emit("pinchOut", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.pinchZoom });
+      socketCodes[token].emit("pinchOut", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
     }
   });
 }); // Main Connect
@@ -100,14 +100,6 @@ io.sockets.on('disconnect', function(socket){
    }
 }); // Main Disconnect 
 
-
-
-// function tick () {
-//   var now = new Date().toUTCString();
-//   // a message is emitted when a message sent with socket.send is received
-//   io.sockets.send(now);
-// }
-// setInterval(tick, 1000);
 
 server.listen(80);
 

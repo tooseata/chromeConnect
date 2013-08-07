@@ -1,5 +1,5 @@
 var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-//var socketserver = 'http://127.0.0.1:8080';
+//var socketserver = 'http://127.0.0.1:9999';
 var channelTabs = [];
 var activeTab;
 
@@ -96,16 +96,17 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('pinchIn', function(data){
-      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.pinchZoom);
+      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
     socket.on('pinchOut', function(data){
-      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.pinchZoom);
+      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
+
   } else if(type === 'disconnectSocketConnection'){
       socket.disconnect();
       console.log('You Have Been Disconnected');
-  } 
+  }
 
 };// End socketConnection
 

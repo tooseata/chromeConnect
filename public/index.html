@@ -2,117 +2,77 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-        
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link href="stylesheets/main.css" type="text/css" rel="stylesheet" />
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="javascripts/iocss.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
     <script type="text/javascript" src="javascripts/jquery.touchSwipe.js"></script>
     <script type="text/javascript" src="/javascripts/modernizr-sockets-touchevents.js"></script>
-    <script type="text/javascript" src="javascripts/main.js"></script>
+   <!-- <script type="text/javascript" src="javascripts/inobounce.min.js"></script> -->
+   <!--  <script type="text/javascript" src="javascripts/main.js"></script> -->
+    <script type="text/javascript" src="javascripts/chromeConnect.js"></script>
 
  
   </head>
-  <body>
 
-    <script type="text/javascript">
+<body class="iOCSS "> <!-- iNoBounce -->
+
+  <div class="frame striped">
     
-      var socketUrl = 'http://' + location.hostname + ':80';
-      var isMobileDevice = Modernizr.touch;
-      var socket = io.connect(socketUrl);
-
-      socket.on('connecting', function () {
-        console.log('Setting Up connection');
-      });
-
-      socket.on('error', function () {
-        console.log('error');
-      });
-    
-      // Check Device Type
-      socket.on('checkDevice', function () {
-        console.log("connected!");
-        // Using modernizr feature detection for mobile touch events
-        if(isMobileDevice){
-          isTouchable();
-        } else{
-          isNotTouchable();
-        }
-      }); // main check
-
-
-      var isTouchable = function(){
-        var sessionHash = prompt('Please enter the code:');
-        socket.emit('initiateController', {sessionHash: sessionHash});
-        socket.on('controllerAuthorization', function (data) {
-          if(data){
-            alert('Authorized');
-            var sessionHash = data;
-            // Touchable jQuery 
-            $(function() {      
-              $("#controllerPad").swipe( {
-
-                swipeStatus:function(event, phase, direction, distance , duration , fingerCount) {
-                   $(this).find('#statusBox').text("swiped " + distance + ' px');
-                   if(phase === $.fn.swipe.phases.PHASE_END || phase === $.fn.swipe.phases.PHASE_CANCEL) {
-                      // no swipe
-                    } else{
-                        socket.emit('swipeStatus', {"distance" : distance, "sessionHash": sessionHash});
-                    }
-                   
-                },
-
-                pinchStatus:function(event, phase, direction, distance , duration , fingerCount, pinchZoom) {
-                  $(this).find('#statusBox').text("pinched " + distance + " px ");
-                  if(phase === $.fn.swipe.phases.PHASE_END || phase === $.fn.swipe.phases.PHASE_CANCEL) {
-                      // no pinch
-                  } else{
-                      socket.emit('pinchStatus', {"distance" : distance, "sessionHash": sessionHash});
-                  }
-                  
-                },
-
-                swipe:function(event, direction, distance, duration, fingerCount) {
-                   $(this).find('#statusBox').text("You swiped " + direction + " with " + fingerCount + " fingers");
-                   socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "distance":distance, "duration":duration, "sessionHash": sessionHash});
-                },
-
-                pinchIn:function(event, direction, distance, duration, fingerCount, pinchZoom) {
-                  $(this).find('#statusBox').text("You pinched " +direction + " by " + distance +"px, zoom scale is "+pinchZoom);
-                  socket.emit('pinchIn', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom});
-                },
-
-                pinchOut:function(event, direction, distance, duration, fingerCount, pinchZoom) {
-                  $(this).find('#statusBox').text("You pinched " +direction + " by " + distance +"px, zoom scale is "+pinchZoom);
-                  socket.emit('pinchOut', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom});
-                },
-
-                fingers:$.fn.swipe.fingers.ALL  
-              });
-            }); // Touchable jQuery 
-          } else{
-            socket.disconnect();
-            alert('You have been disconnected. Wrong Key');
-          }
-        });
-
-      } // is Mobile 
-      var isNotTouchable = function() {
-        console.log('DESKTOP');
-      } // is Desktop 
-
-    </script>
-
-    <div class="container">
-      <div id="controllerPad" class="box">Swipe me with different combinations of fingers</div>
-      <div id="statusBox">
-        <p>Two Finger swipe Up / Down = Move in direction the amount of swiped pixels</p>
-        <p>Three Finger swipe Up / Down = Move to top / bottom of page depending on swipe direction</p>
+    <div class="header">
+      <div>
+        <a href="#" class="button"><i class="icon-github-alt"></i> Git</a>
+      </div>
+      
+      <h1>Chrome Connect</h1>
+      
+      <div>
+        <a href="css/io.css" download="io.css" class="button default"><i class="icon-download-alt"></i> Do Somthing</a>
       </div>
     </div>
-
-  </body>
+    
+    <div class="scrollable">
+      
+      <div id="panel-about" style="height:100%">
+        
+        <div id="controllerPad" class="well"></div>
+      
+      </div>
+      
+      <div style="display: none; height:100%" id="panel-docs">
+        
+        <div id="controllerPinch" class="well"></div>
+        
+      </div>
+      
+      <div style="display: none;" id="panel-donate">
+        
+        <div class="well">
+          <h1>Donate</h1>
+          <p>The donate section.</p>
+        </div>
+        
+      </div>
+    </div>
+    
+    <div class="footer">
+      <button id="tab-about" class="down">
+        <i class="icon-question-sign"></i>
+        Scroll
+      </button>
+      <button id="tab-docs">
+        <i class="icon-book"></i>
+        Pinch
+      </button>
+      <button id="tab-donate">
+        <i class="icon-question-sign"></i>
+        About
+      </button>
+    </div>
+    
+  </div>
+  
+</body>
 </html>

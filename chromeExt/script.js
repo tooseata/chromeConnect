@@ -11,7 +11,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
 var pageScroll = function(direction,distance,duration){
 
-  distance = (distance * 1.5);
+  distance = (distance * 4);
 
   if (direction === "up"){
     if(self.pageYOffset === 0){
