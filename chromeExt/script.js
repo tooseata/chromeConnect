@@ -28,8 +28,8 @@ var pageScroll = function(direction,distance,duration){
 };
 
 function smoothScroll(distance) {
-  var startY   = self.pageYOffset 
-  var distance = distance + startY
+  var startY   = self.pageYOffset;
+  distance = distance + startY;
   var stopY    = distance;
   if (distance < 25) {
     scrollTo(0, stopY); return;
