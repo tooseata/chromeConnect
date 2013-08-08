@@ -13,7 +13,7 @@ var socketUrl = 'http://' + location.hostname + ':80';
     
       // Check Device Type
       socket.on('checkDevice', function () {
-        console.log("connected!");
+        console.log("connecting!!");
         // Using modernizr feature detection for mobile touch events
         if(isMobileDevice){
           isTouchable();
@@ -23,7 +23,8 @@ var socketUrl = 'http://' + location.hostname + ':80';
       }); // main check
 
       var isTouchable = function(){
-        var sessionHash = prompt('Please enter the code:');
+        var urlPath = document.location.pathname;
+        var sessionHash = urlPath.substring(1,urlPath.lenght);
         socket.emit('initiateController', {sessionHash: sessionHash});
         socket.on('controllerAuthorization', function (data) {
           if(data){

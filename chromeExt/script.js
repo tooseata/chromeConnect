@@ -179,7 +179,6 @@ var movePointer = function(xPos, yPos, type) {
     pointer.style.top = (currentY/3) +'px';
   }
 
-
 };
 
 

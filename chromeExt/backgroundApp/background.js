@@ -1,5 +1,5 @@
 var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-//var socketserver = 'http://127.0.0.1:80';
+//var socketserver = 'http://127.0.0.1:8090';
 var channelTabs = [];
 var activeTab;
 
@@ -61,7 +61,7 @@ var socketConnection = function(type, tabID, windowID) {
 
     socket.on('desktopAccessToken', function(data){
       //chrome.browserAction.setPopup({popup: "browseraction/confirm.html"});
-      alert("Go to www.foo.com and enter your code to connect: " + data);
+      alert("Go to www.chromeconnect.nodejitsu.com/"+data);
     });
 
     socket.on('linkMobileDevice', function(data){

@@ -13,12 +13,19 @@ var root = __dirname;
 var io = require('socket.io').listen(server);
 var socketCodes = {};
 
+app.get('/', function(req, res){
+  res.send("You need a valid ID to start your chrome connection");
+});
+
 app.configure(function(){
   app.use(express.static(path.join(root, 'public')));
 });
 
-app.get('/', function(req, res){
-  res.send(root, + 'index.html');
+app.get('/:connectid', function(req, res){
+  res.status(200);
+  res.sendfile(root + '/public/index.html');
+  console.log(req.params.connectid);
+
 });
 
 io.sockets.on('connection', function(socket){
