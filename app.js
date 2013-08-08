@@ -108,7 +108,7 @@ io.sockets.on('disconnect', function(socket){
 }); // Main Disconnect 
 
 
-server.listen(9999);
+server.listen(80);
 
 
 

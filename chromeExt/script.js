@@ -88,6 +88,8 @@ var pageToporBottom = function(direction, duration){
 
 var tempX;
 var tempY;
+var tempClientX;
+var tempClientY;
 var currentX;
 var currentY;
 var windowWidth = document.body.scrollWidth;
@@ -95,8 +97,7 @@ var windowHeight = document.body.scrollHeight;
 
 //Check whether browser supports locking or not
 var havePointerLock = 'webkitPointerLockElement' in document;
-//Get some random element in http://www.google.co.in/ page
-var element = document.getElementById("hplogo");
+var element = document.body;
 //Bind an event Listener
 element.addEventListener("click", function () {
     if (havePointerLock) {
@@ -157,62 +158,36 @@ var makePointer = function() {
     document.body.appendChild(image);
 };
 
-var movePointerDirection = function(direction, distance){
-  var xVal, yVal;
-  console.log('xVal ' + xVal);
-  console.log('yVal ' + yVal);
-  console.log('currentX ' + currentX);
-  console.log('currentY ' + currentY);
-  console.log('Distance ' + distance);
-
-  switch(direction){
-    case null:
-    break;
-
-    case "up":
-      // yPos is decreasing
-      yVal += (currentY - distance);
-      movePointer(currentX,yVal);
-      break;
-
-    case "down":
-      //yPos is increasing 
-      yVal += (currentY + distance);
-      movePointer(currentX,yVal);
-      break;
-
-    case "left":
-      //xPos is decreasing
-      xVal += (currentX - distance);
-      movePointer(xVal,currentY);
-      break;
-
-    case "right":
-      //xPos is increasing 
-      xVal += (currentX + distance);
-      movePointer(xVal,currentY);
-      break;
-  }
-
-};
 
 var movePointer = function(xPos, yPos, type) {
-  debugger;
+  console.log(type);
+  var pointer = document.getElementById("newPointer_chromeConnect");
   if (type === "nativeDirection"){
-    var pointer = document.getElementById("newPointer_chromeConnect");
     pointer.style.left = xPos+'px';
     pointer.style.top = yPos+'px';
+  } else {
+
+    tempX += xPos;
+    console.log("tempX" , tempX);
+    tempY += yPos;
+    console.log("tempY" , tempY);
+    currentX = tempX + tempClientX;
+    console.log("currentX" , currentX);
+    currentY = tempY + tempClientY;
+    console.log("currentY" , currentY);
+    pointer.style.left = (currentX/3) +'px';
+    pointer.style.top = (currentY/3) +'px';
   }
+
 
 };
 
 
 function moveCallback(e) {
-    debugger;
     tempX += e.webkitMovementX;
     tempY += e.webkitMovementY;
-    // tempClientX = e.clientX;
-    // tempClientY = e.clientY;
+    tempClientX = e.clientX;
+    tempClientY = e.clientY;
     currentX = tempX + e.clientX;
     currentY = tempY + e.clientY;
 
@@ -220,7 +195,6 @@ function moveCallback(e) {
         document.webkitExitPointerLock();
     } else{
         movePointer(currentX,currentY,"nativeDirection");
-        //console.log('My Position is: ' + currentX + "," + currentY );
     }
 }
 
@@ -235,7 +209,7 @@ function logClick(e){
     ee.initMouseEvent("click", true, true, null, 1,x + e.screenX - e.clientX,y + e.screenY - e.clientY,x,y);
     var target = document.elementFromPoint(x, y);
     // TODO fix to find href 
-    if (target.tagName == 'A' || target.tagName.toLowerCase () !== "body" || target.tagName.toLowerCase () !== "html" || target.tagName.toLowerCase () !== "font"){
+    if (target){
       target.dispatchEvent(ee);
     } else{
         e.preventDefault();

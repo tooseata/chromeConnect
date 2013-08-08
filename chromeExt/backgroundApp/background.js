@@ -1,5 +1,5 @@
-//var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-var socketserver = 'http://127.0.0.1:9999';
+var socketserver = 'http://chromeconnect.nodejitsu.com:80';
+//var socketserver = 'http://127.0.0.1:80';
 var channelTabs = [];
 var activeTab;
 

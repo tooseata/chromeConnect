@@ -1,5 +1,5 @@
 jQuery.event.props.push("touches");
-var socketUrl = 'http://' + location.hostname + ':9999';
+var socketUrl = 'http://' + location.hostname + ':80';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
 
@@ -81,9 +81,8 @@ var socketUrl = 'http://' + location.hostname + ':9999';
               });
 
               $("#controller").on("touchmove", function(event){
-                debugger;
                 var targetEvent =  event.touches.item(0);
-                socket.emit('move', {"dx" : Math.abs(startX - targetEvent.clientX), "dy": Math.abs(startY - targetEvent.clientY), "sessionHash": sessionHash});
+                socket.emit('move', {"dx" : targetEvent.clientX - startX , "dy": targetEvent.clientY - startY, "sessionHash": sessionHash});
                 event.preventDefault();
               });
             }); // Touchable Scroll
