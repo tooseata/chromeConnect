@@ -72,6 +72,14 @@ io.sockets.on('connection', function(socket){
     // }
   });
 
+  socket.on('move', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      console.log(data.dx);
+      //socketCodes[token].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
+    }
+  });
+
   socket.on('pinchStatus', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
@@ -101,7 +109,7 @@ io.sockets.on('disconnect', function(socket){
 }); // Main Disconnect 
 
 
-server.listen(80);
+server.listen(9999);
 
 
 

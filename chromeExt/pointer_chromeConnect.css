@@ -1,0 +1,10 @@
+#newPointer_chromeConnect {
+  z-index: 1000000000;
+  position: absolute;
+/*fill-opacity: 0.5;
+stroke-width: 1;
+fill: #3080d0;
+stroke: #3080d0;*/
+/*background-size: 15px;*/
+/*background-image:url('chrome-extension://__MSG_@@extension_id__/icons/arrow-cursor.png');*/
+}

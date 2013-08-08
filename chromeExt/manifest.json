@@ -23,9 +23,10 @@
   "content_scripts":[
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["script.js", "pointerControl.js"]
+      "css": ["pointer_chromeConnect.css"],
+      "js": ["script.js"]
     }
   ], 
 
-  "web_accessible_resources": ["backgroundApp/socketio.js", "backgroundApp/background.js"]
+  "web_accessible_resources": ["backgroundApp/socketio.js", "backgroundApp/background.js", "icons/arrow-cursor.png"]
 }

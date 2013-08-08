@@ -1,4 +1,4 @@
-var socketUrl = 'http://' + location.hostname + ':80';
+var socketUrl = 'http://' + location.hostname + ':9999';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
 
@@ -60,7 +60,19 @@ var socketUrl = 'http://' + location.hostname + ':80';
                 pinchThreshold:5
               });
             }); // Touchable jQuery
-
+            //Touchable jQuery 
+            $(function() { 
+              $("#controller").swipe( {
+                swipeStatus:function(event, phase, direction, distance , duration , fingerCount) {
+                   socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "distance":distance, "duration":duration, "sessionHash": sessionHash});
+                },
+                swipe:function(event, direction, distance, duration, fingerCount) {
+                  // socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "distance":distance, "duration":duration, "sessionHash": sessionHash});
+                },
+                fingers: 1,
+                threshold: 0
+              });
+            }); // Touchable jQuery
           } else{
             socket.disconnect();
             alert('You have been disconnected. Wrong Key');
