@@ -5,9 +5,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.type === "swipe" && request.fingerCount === 2) {
     pageScroll(request.swipeDirection, request.swipDistance, request.swipeDuration);
   } else if(request.type === "swipe" && request.fingerCount === 3){
-    pageToporBottom(request.swipeDirection, request.swipDistance, request.swipeDuration);
-  } else if (request.type === "swipe" &&  request.fingerCount === 1){
-    movePointerDirection(request.swipeDirection, request.swipDistance);
+      pageToporBottom(request.swipeDirection, request.swipDistance, request.swipeDuration);
+  } else if (request.type === "navigation"){
+      movePointer(request.xVal, request.yVal, "syntheticDirection");
   }
 });
 
@@ -158,7 +158,6 @@ var makePointer = function() {
 };
 
 var movePointerDirection = function(direction, distance){
-  debugger;
   var xVal, yVal;
   console.log('xVal ' + xVal);
   console.log('yVal ' + yVal);
@@ -197,15 +196,19 @@ var movePointerDirection = function(direction, distance){
 
 };
 
-var movePointer = function(xPos, yPos) {
-  var pointer = document.getElementById("newPointer_chromeConnect");
-  pointer.style.left = xPos+'px';
-  pointer.style.top = yPos+'px';
+var movePointer = function(xPos, yPos, type) {
+  debugger;
+  if (type === "nativeDirection"){
+    var pointer = document.getElementById("newPointer_chromeConnect");
+    pointer.style.left = xPos+'px';
+    pointer.style.top = yPos+'px';
+  }
+
 };
 
 
 function moveCallback(e) {
-
+    debugger;
     tempX += e.webkitMovementX;
     tempY += e.webkitMovementY;
     // tempClientX = e.clientX;
@@ -216,7 +219,7 @@ function moveCallback(e) {
     if(currentX < 0 || currentX > windowWidth || currentY< 0 || currentY > windowHeight){
         document.webkitExitPointerLock();
     } else{
-        movePointer(currentX,currentY);
+        movePointer(currentX,currentY,"nativeDirection");
         //console.log('My Position is: ' + currentX + "," + currentY );
     }
 }
@@ -225,7 +228,6 @@ function logClick(e){
     if (e._isSynthetic){
       return;
     }
-    //debugger;
     var ee = document.createEvent("MouseEvents");
     ee._isSynthetic = true;
     x = currentX;

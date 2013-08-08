@@ -1,3 +1,4 @@
+jQuery.event.props.push("touches");
 var socketUrl = 'http://' + location.hostname + ':9999';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
@@ -60,19 +61,33 @@ var socketUrl = 'http://' + location.hostname + ':9999';
                 pinchThreshold:5
               });
             }); // Touchable jQuery
-            //Touchable jQuery 
-            $(function() { 
-              $("#controller").swipe( {
-                swipeStatus:function(event, phase, direction, distance , duration , fingerCount) {
-                   socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "distance":distance, "duration":duration, "sessionHash": sessionHash});
-                },
-                swipe:function(event, direction, distance, duration, fingerCount) {
-                  // socket.emit('swipe', {"direction" : direction, "fingerCount":fingerCount, "distance":distance, "duration":duration, "sessionHash": sessionHash});
-                },
-                fingers: 1,
-                threshold: 0
+
+            //Touchable Scroll 
+            $(function() {
+
+              document.body.addEventListener('touchmove', function(event) {
+                  event.preventDefault();
+                }, false);
+
+              var startX;
+              var startY;
+
+              $("#controller").on("touchstart", function(event){
+                var targetEvent =  event.touches.item(0);
+                startX = targetEvent.pageX;
+                startY = targetEvent.pageY;
+                event.preventDefault();
+                return false;
               });
-            }); // Touchable jQuery
+
+              $("#controller").on("touchmove", function(event){
+                debugger;
+                var targetEvent =  event.touches.item(0);
+                socket.emit('move', {"dx" : Math.abs(startX - targetEvent.clientX), "dy": Math.abs(startY - targetEvent.clientY), "sessionHash": sessionHash});
+                event.preventDefault();
+              });
+            }); // Touchable Scroll
+
           } else{
             socket.disconnect();
             alert('You have been disconnected. Wrong Key');

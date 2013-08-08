@@ -80,14 +80,14 @@ var socketConnection = function(type, tabID, windowID) {
 
     socket.on('swipe', function(data){
       var notificationType = {"type": "swipe", "swipeDirection":data.direction, "fingerCount":data.fingerCount, "swipeDuration": data.duration, "swipDistance":data.distance};
-      console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
+      //console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
-    socket.on('swipeStatus', function(data){
-      console.log("Swiped " + data.distance + ' px');
-      //var notificationType = {"type": "swipe"};
-      //chrome.tabs.sendMessage(activeTab, notificationType);
+    socket.on('move', function(data){
+      console.log("Move Data " + data);
+      var notificationType = {"type": "navigation", "xVal" : data.dx, "yVal" : data.dy};
+      chrome.tabs.sendMessage(activeTab, notificationType);
 
     });
 

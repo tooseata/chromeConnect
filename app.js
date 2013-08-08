@@ -75,8 +75,7 @@ io.sockets.on('connection', function(socket){
   socket.on('move', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
-      console.log(data.dx);
-      //socketCodes[token].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
+      socketCodes[token].emit("move", {"dx": data.dx, "dy" : data.dy});
     }
   });
 
