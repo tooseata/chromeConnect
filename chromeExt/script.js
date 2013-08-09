@@ -8,6 +8,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       pageToporBottom(request.swipeDirection, request.swipDistance, request.swipeDuration);
   } else if (request.type === "navigation"){
       movePointer(request.xVal, request.yVal, "syntheticDirection");
+  } else if (request.type === "fixedPointerOn"){
+    console.log('Pointer Fixed Request');
+    fixedPointerOn();
   }
 });
 
@@ -82,6 +85,12 @@ var pageToporBottom = function(direction, duration){
 };
 
 
+var fixedPointerOn = function(){
+    console.log('Creating Splah');
+    var newDiv = document.createElement('image');
+    newDiv.id = 'testSpash';
+    document.body.appendChild(newDiv);
+}
 
 // Pointer Control 
 
@@ -95,66 +104,44 @@ var currentY;
 var windowWidth = document.body.scrollWidth;
 var windowHeight = document.body.scrollHeight;
 
+
+
 //Check whether browser supports locking or not
-var havePointerLock = 'webkitPointerLockElement' in document;
-var element = document.body;
-//Bind an event Listener
-element.addEventListener("click", function () {
-    if (havePointerLock) {
-        // Ask the browser to lock the pointer
-        element.requestPointerLock = element.webkitRequestPointerLock;
-        element.requestPointerLock();
-        var pointer = document.getElementById("newPointer_chromeConnect");
-        if (pointer){
-            pointer.setAttributeNS(null,"visibility", "visible");
+
+  var element = document.body;
+  element.addEventListener("click", function (e) {
+    if (e.target.id === "testSpash"){
+      var havePointerLock = 'webkitPointerLockElement' in document;
+        if (havePointerLock) {
+            // Ask the browser to lock the pointer
+            element.requestPointerLock = element.webkitRequestPointerLock;
+            element.requestPointerLock();
+            var pointer = document.getElementById("newPointer_chromeConnect");
+            if (pointer){
+                pointer.style.visibility = 'visible';
+            } else {
+                makePointer();
+            }
+            tempX = 0;
+            tempY = 0;
+            //Register lock change callback
+            document.addEventListener('webkitpointerlockchange', changeCallback, false);
+            //Register callback for all errors
+            document.addEventListener('webkitpointerlockerror', errorCallback, false);
         } else {
-            makePointer();
+            alert("Your browser does not support Pointer Lock, Please Upgrade it");
         }
-        tempX = 0;
-        tempY = 0;
-        //Register lock change callback
-        document.addEventListener('webkitpointerlockchange', changeCallback, false);
-        //Register callback for all errors
-        document.addEventListener('webkitpointerlockerror', errorCallback, false);
-    } else {
-        alert("Your browser does not support Pointer Lock, Please Upgrade it");
-    }
-});
+      }
+  });
 
 
-// //create function, it expects 2 values.
-// function insertAfter(newElement,targetElement) {
-//     //target is what you want it to go after. Look for this elements parent.
-//     var parent = targetElement.parentNode;
-    
-//     //if the parents lastchild is the targetElement...
-//     if(parent.lastchild == targetElement) {
-//         //add the newElement after the target element.
-//         parent.appendChild(newElement);
-//     } else {
-//         // else the target has siblings, insert the new element between the target and it's next sibling.
-//         parent.insertBefore(newElement, targetElement.nextSibling);
-//       }
-// }
+
 
 var makePointer = function() {
-    console.log('Creating Pointer');
-    /*
-    var xmlns = "http://www.w3.org/2000/svg";
-    var pointer = document.createElementNS(xmlns, "circle");
-    var root = document.body.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "svg") );
-    pointer.setAttributeNS(null, "id", "newPointer_chromeConnect");
-    pointer.setAttributeNS(null, "type", "image/svg+xml");
-    pointer.setAttributeNS(null, "data", "moving_circle.svg");
-    pointer.setAttributeNS(null, "cx", 50);
-    pointer.setAttributeNS(null, "cy", 50);
-    pointer.setAttributeNS(null, "r",  10);
-    pointer.setAttributeNS(null, "fill", "blue");
-    root.appendChild(pointer);
-    */
+    var chromeConnectPointer = chrome.extension.getURL('icons/arrow-cursor.png');
     var image = document.createElement('image');
     image.id = 'newPointer_chromeConnect';
-    image.src = "http://png-2.findicons.com/files/icons/2232/wireframe_mono/48/cursor_arrow.png";
+    image.src = chromeConnectPointer;
     document.body.appendChild(image);
 };
 
@@ -166,7 +153,6 @@ var movePointer = function(xPos, yPos, type) {
     pointer.style.left = xPos+'px';
     pointer.style.top = yPos+'px';
   } else {
-
     tempX += xPos;
     console.log("tempX" , tempX);
     tempY += yPos;
@@ -191,13 +177,16 @@ function moveCallback(e) {
     currentY = tempY + e.clientY;
 
     if(currentX < 0 || currentX > windowWidth || currentY< 0 || currentY > windowHeight){
-        document.webkitExitPointerLock();
+        //document.webkitExitPointerLock();
+        //console.log('Off screen');
     } else{
         movePointer(currentX,currentY,"nativeDirection");
     }
 }
 
-function logClick(e){
+var logClick = function (e){
+    console.log('Clicking');
+    console.log(e._isSynthetic);
     if (e._isSynthetic){
       return;
     }
@@ -205,30 +194,33 @@ function logClick(e){
     ee._isSynthetic = true;
     x = currentX;
     y = currentY;
-    ee.initMouseEvent("click", true, true, null, 1,x + e.screenX - e.clientX,y + e.screenY - e.clientY,x,y);
+    ee.initMouseEvent("click", true, true, null, 1,
+                      x + e.screenX - e.clientX,
+                      y + e.screenY - e.clientY,
+                      x,y,e.ctrlKey, e.altKey, 
+                      e.shiftKey, e.metaKey, 0, null);
     var target = document.elementFromPoint(x, y);
-    // TODO fix to find href 
+    console.log("Target", target);
     if (target){
       target.dispatchEvent(ee);
     } else{
-        e.preventDefault();
-        e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
     }
-}
+};
 
 function changeCallback() {
     //Check for element whether locked is expected element or not
     if (document.webkitPointerLockElement == element) {
         // Pointer was just locked
-        // Enable the mousemove listener
         document.addEventListener("mousemove", moveCallback, false);
         document.addEventListener("click", logClick, false);
     } else {
         // Pointer was just unlocked
-        // Disable the mousemove listener
         document.removeEventListener("mousemove", moveCallback, false);
+        document.removeEventListener("click", logClick, false);
         var pointer = document.getElementById("newPointer_chromeConnect");
-        pointer.setAttributeNS(null,"visibility", "hidden");
+        // pointer.style.visibility = 'hidden';
     }
 }
 

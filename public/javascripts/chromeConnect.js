@@ -28,7 +28,6 @@ var socketUrl = 'http://' + location.hostname + ':80';
         socket.emit('initiateController', {sessionHash: sessionHash});
         socket.on('controllerAuthorization', function (data) {
           if(data){
-            alert('Authorized');
             var sessionHash = data;
             //Touchable jQuery 
             $(function() { 

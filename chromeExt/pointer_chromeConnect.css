@@ -1,10 +1,20 @@
 #newPointer_chromeConnect {
   z-index: 1000000000;
   position: absolute;
-/*fill-opacity: 0.5;
-stroke-width: 1;
-fill: #3080d0;
-stroke: #3080d0;*/
-/*background-size: 15px;*/
-/*background-image:url('chrome-extension://__MSG_@@extension_id__/icons/arrow-cursor.png');*/
+  visibility: visible;
+  top: 0;
+  right: 0;
+  width:13px;
+  pointer-events:none;
+}
+
+#testSpash{
+  z-index: 1000000000;
+  position: absolute;
+  width: 200px;
+  height:200px;
+  top:0;
+  left:0;
+  fill: #3080d0;
+
 }

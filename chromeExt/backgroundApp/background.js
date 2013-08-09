@@ -40,6 +40,11 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         chrome.browserAction.setBadgeText({text: ""});
         break;
 
+        case "enableMouseControl":
+        console.log('Click ON');
+        socketConnection(request.type, request.tabID, request.windowID);
+        break;
+
     }
     return true;
 });
@@ -47,6 +52,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
 var socketConnection = function(type, tabID, windowID) {
   var socket = io.connect(socketserver);
+
   if(type === 'loadSocketConnection'){
     socket.on('connecting', function () {
         console.log('Setting Up connection');
@@ -60,8 +66,7 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('desktopAccessToken', function(data){
-      //chrome.browserAction.setPopup({popup: "browseraction/confirm.html"});
-      alert("Go to www.chromeconnect.nodejitsu.com/"+data);
+      alert("Go to www.chromeconnect.nodejitsu.com/" + data);
     });
 
     socket.on('linkMobileDevice', function(data){
@@ -103,11 +108,17 @@ var socketConnection = function(type, tabID, windowID) {
       console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
-  } else if(type === 'disconnectSocketConnection'){
+  } 
+
+  if(type === 'disconnectSocketConnection'){
       socket.disconnect();
       console.log('You Have Been Disconnected');
   }
 
+  if(type === 'enableMouseControl'){
+      var notificationType = {"type": "fixedPointerOn"};
+      chrome.tabs.sendMessage(activeTab, notificationType);
+  }
 };// End socketConnection
 
 
