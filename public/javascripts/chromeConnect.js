@@ -48,13 +48,19 @@ var socketUrl = 'http://' + location.hostname + ':80';
             $(function() {
               $("#controllerPinch").swipe( {
                 pinchStatus:function(event, phase, direction, distance , duration , fingerCount, pinchZoom) {
-                  socket.emit('pinchIn', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom, "sessionHash": sessionHash});
+                  if (direction === "in"){
+                    socket.emit('pinchIn', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom, "sessionHash": sessionHash});
+                  } else if (direction === "out"){
+                    socket.emit('pinchOut', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom, "sessionHash": sessionHash});
+                  } else {
+                    return;
+                  }
                 },
                 pinchIn: function(event, direction, distance, duration, fingerCount, pinchZoom) {
-                  //socket.emit('pinchIn', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom, "sessionHash": sessionHash});
+                  socket.emit('pinchInTotal', {"zoomScale": pinchZoom, "sessionHash": sessionHash});
                 },
                 pinchOut: function(event, direction, distance, duration, fingerCount, pinchZoom) {
-                  //socket.emit('pinchOut', {"direction" : direction, "distance": distance, "zoomScale": pinchZoom, "sessionHash": sessionHash});
+                  socket.emit('pinchOutTotal', {"zoomScale": pinchZoom, "sessionHash": sessionHash});
                 },
                 fingers: 2,
                 allowPageScroll:"none",
@@ -64,6 +70,17 @@ var socketUrl = 'http://' + location.hostname + ':80';
 
             //Touchable Scroll 
             $(function() {
+              $("#controller").swipe( {
+                tap:function(event, target) {
+                  socket.emit('zoomTapUndo', {"sessionHash": sessionHash});
+                },
+                doubleTap:function(event, target) {
+                  socket.emit('zoomTap', {"sessionHash": sessionHash});
+                },
+                longTap:function(event, target){
+                  socket.emit('changeTab', {"sessionHash": sessionHash});
+                }
+              });// swipe
 
               document.body.addEventListener('touchmove', function(event) {
                   event.preventDefault();

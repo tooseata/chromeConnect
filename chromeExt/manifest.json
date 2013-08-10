@@ -24,7 +24,7 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "css": ["pointer_chromeConnect.css"],
-      "js": ["script.js"]
+      "js": ["script.js", "zoom.js"]
     }
   ], 
 

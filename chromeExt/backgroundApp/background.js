@@ -1,5 +1,5 @@
 var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-//var socketserver = 'http://127.0.0.1:8090';
+//var socketserver = 'http://127.0.0.1:7070';
 var channelTabs = [];
 var activeTab;
 
@@ -96,16 +96,34 @@ var socketConnection = function(type, tabID, windowID) {
 
     });
 
-    socket.on('pinchStatus', function(data){
-      console.log("Pinched " + data.distance + ' px');
-    });
-
     socket.on('pinchIn', function(data){
+      var notificationType = {"type": "pinchIn", "zoomScale" : data.zoomScale};
+      chrome.tabs.sendMessage(activeTab, notificationType);
       console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
     socket.on('pinchOut', function(data){
+      var notificationType = {"type": "pinchOut", "zoomScale" : data.zoomScale};
+      chrome.tabs.sendMessage(activeTab, notificationType);
       console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
+    });
+
+    socket.on('zoomTapUndo', function(data){
+      console.log('zoomTapUndo');
+      var notificationType = {"type": "zoomTapUndo"};
+      chrome.tabs.sendMessage(activeTab, notificationType);
+    });
+
+    socket.on('zoomTap', function(data){
+      console.log('zoomTap');
+      var notificationType = {"type": "zoomTap"};
+      chrome.tabs.sendMessage(activeTab, notificationType);
+    });
+
+    socket.on('changeTab', function(data){
+       console.log('changeTab');
+      var notificationType = {"type": "changeTab"};
+      chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
   } 

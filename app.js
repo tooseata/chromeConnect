@@ -86,13 +86,6 @@ io.sockets.on('connection', function(socket){
     }
   });
 
-  socket.on('pinchStatus', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("pinchStatus", {"distance": data.distance});
-    }
-  });
-
   socket.on('pinchIn', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
@@ -100,10 +93,46 @@ io.sockets.on('connection', function(socket){
     }
   });
 
+
   socket.on('pinchOut', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
       socketCodes[token].emit("pinchOut", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
+    }
+  });
+
+  socket.on('pinchInTotal', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("pinchInTotal", {"zoomScale": data.zoomScale});
+    }
+  });
+
+  socket.on('pinchOutTotal', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("pinchOutTotal", {"zoomScale": data.zoomScale});
+    }
+  });
+
+  socket.on('zoomTapUndo', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("zoomTapUndo", {});
+    }
+  });
+
+  socket.on('zoomTap', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("zoomTap", {});
+    }
+  });
+
+  socket.on('changeTab', function(data){
+    var token = data.sessionHash;
+    if(token in socketCodes){
+      socketCodes[token].emit("changeTab", {});
     }
   });
 }); // Main Connect

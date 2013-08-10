@@ -1,5 +1,18 @@
 // Tab connection handeler 
 var port = chrome.runtime.connect();
+var tempX;
+var tempY;
+var tempClientX;
+var tempClientY;
+var currentX;
+var currentY;
+var windowWidth = document.body.scrollWidth;
+var windowHeight = document.body.scrollHeight;
+var element = document.body;
+var lastPinchOutTotal = 0;
+var lastPinchInTotal = 0;
+
+
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.type === "swipe" && request.fingerCount === 2) {
@@ -9,10 +22,60 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.type === "navigation"){
       movePointer(request.xVal, request.yVal, "syntheticDirection");
   } else if (request.type === "fixedPointerOn"){
-    console.log('Pointer Fixed Request');
-    fixedPointerOn();
+      fixedPointerOn();
+  } else if (request.type === "pinchIn"){
+      pinchPageIn(request.zoomScale);
+  } else if (request.type === "pinchOut"){
+      pinchPageOut(request.zoomScale);
+  } else if (request.type === "pinchInTotal"){
+      lastPinchInTotal = request.zoomScale;
+  } else if (request.type === "pinchOutTotal"){
+      lastPinchOutTotal = request.zoomScale;
+  } else if (request.type === "zoomTapUndo"){
+     console.log('zoomTapUndo');
+     zoom.out();
+  } else if (request.type === "zoomTap"){
+     console.log('zoomTap');
+     zoom.to({x: tempClientX,y: tempClientY,scale: 3});
+  } else if (request.type === "changeTab"){
+     console.log('Change Tab');
   }
 });
+
+var pinchPageIn = function (zoomScale){
+  console.log('Increasing Zoom');
+  console.log('lastPinchInTotal', lastPinchInTotal);
+  var pinchAmount = zoomScale * .2;
+  var scaleIn = (pinchAmount + (lastPinchInTotal * .2)).toFixed(2);
+  console.log('scaleIn', scaleIn);
+  // var origScale = tempClientX + "px " + tempClientY+ "px";
+  // document.body.style.setProperty("-webkit-transform-origin", origScale, null);
+  if (scaleIn >= 1.0 && scaleIn <= 3.0) {
+    setOrigin(tempClientX,tempClientY);
+    document.body.style.setProperty("-webkit-transform", "scale(" + scaleIn + "," + scaleIn + ")", null);
+  } else {
+    return false;
+  }
+};
+
+var setOrigin = function(x, y){
+  var origin = x +'px '+ y +'px';
+  var transform = 'translate('+ x +'px,'+ y +'px)';
+  document.body.style.WebkitTransformOrigin = origin;
+  document.body.style.WebkitTransform = transform;
+};
+
+
+var pinchPageOut = function (zoomScale){
+  var pinchAmount = zoomScale * .7 ;
+  var scaleOut = (pinchAmount - (lastPinchOutTotal * .7)).toFixed(2);
+  console.log('scaleOut', scaleOut);
+  if(scaleOut <= 1.0){
+    return false;
+  } else {
+    document.body.style.setProperty("-webkit-transform", "scale(" + scaleOut + "," + scaleOut + ")", null);
+  }
+};
 
 var pageScroll = function(direction,distance,duration){
 
@@ -92,48 +155,40 @@ var fixedPointerOn = function(){
     document.body.appendChild(newDiv);
 }
 
+
 // Pointer Control 
-
-
-var tempX;
-var tempY;
-var tempClientX;
-var tempClientY;
-var currentX;
-var currentY;
-var windowWidth = document.body.scrollWidth;
-var windowHeight = document.body.scrollHeight;
-
-
-
-//Check whether browser supports locking or not
-
-  var element = document.body;
-  element.addEventListener("click", function (e) {
-    if (e.target.id === "testSpash"){
-      var havePointerLock = 'webkitPointerLockElement' in document;
-        if (havePointerLock) {
-            // Ask the browser to lock the pointer
-            element.requestPointerLock = element.webkitRequestPointerLock;
-            element.requestPointerLock();
-            var pointer = document.getElementById("newPointer_chromeConnect");
-            if (pointer){
-                pointer.style.visibility = 'visible';
-            } else {
-                makePointer();
-            }
-            tempX = 0;
-            tempY = 0;
-            //Register lock change callback
-            document.addEventListener('webkitpointerlockchange', changeCallback, false);
-            //Register callback for all errors
-            document.addEventListener('webkitpointerlockerror', errorCallback, false);
-        } else {
-            alert("Your browser does not support Pointer Lock, Please Upgrade it");
-        }
+element.addEventListener("click", function (e) {
+  if (e.target.id === "testSpash"){
+    //Check whether browser supports locking or not
+    var havePointerLock = 'webkitPointerLockElement' in document;
+      if (havePointerLock) {
+          // Ask the browser to lock the pointer
+          element.requestPointerLock = element.webkitRequestPointerLock;
+          element.requestPointerLock();
+          var pointer = document.getElementById("newPointer_chromeConnect");
+          if (pointer){
+              pointer.style.visibility = 'visible';
+          } else {
+              makePointer();
+          }
+          tempX = 0;
+          tempY = 0;
+          //Register lock change callback
+          document.addEventListener('webkitpointerlockchange', changeCallback, false);
+          //Register callback for all errors
+          document.addEventListener('webkitpointerlockerror', errorCallback, false);
+      } else {
+          alert("Your browser does not support Pointer Lock, Please Upgrade it");
       }
-  });
+    }
+});
 
+
+element.addEventListener("mousemove", function(event){
+  tempClientX = event.clientX;
+  tempClientY = event.clientY;
+
+});
 
 
 
@@ -154,13 +209,9 @@ var movePointer = function(xPos, yPos, type) {
     pointer.style.top = yPos+'px';
   } else {
     tempX += xPos;
-    console.log("tempX" , tempX);
     tempY += yPos;
-    console.log("tempY" , tempY);
     currentX = tempX + tempClientX;
-    console.log("currentX" , currentX);
     currentY = tempY + tempClientY;
-    console.log("currentY" , currentY);
     pointer.style.left = (currentX/3) +'px';
     pointer.style.top = (currentY/3) +'px';
   }
@@ -168,13 +219,13 @@ var movePointer = function(xPos, yPos, type) {
 };
 
 
-function moveCallback(e) {
+var moveCallback = function (e) {
     tempX += e.webkitMovementX;
     tempY += e.webkitMovementY;
-    tempClientX = e.clientX;
-    tempClientY = e.clientY;
-    currentX = tempX + e.clientX;
-    currentY = tempY + e.clientY;
+    // tempClientX = e.clientX;
+    // tempClientY = e.clientY;
+    currentX = tempX + tempClientX;
+    currentY = tempY + tempClientY;
 
     if(currentX < 0 || currentX > windowWidth || currentY< 0 || currentY > windowHeight){
         //document.webkitExitPointerLock();
@@ -183,6 +234,7 @@ function moveCallback(e) {
         movePointer(currentX,currentY,"nativeDirection");
     }
 }
+
 
 var logClick = function (e){
     console.log('Clicking');
