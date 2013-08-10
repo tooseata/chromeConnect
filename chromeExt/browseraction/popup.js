@@ -17,34 +17,6 @@ window.onload = function() {
     });
   };
 
-// Local storage functionality not working correctly 
-
-  // document.getElementById("mouseControl").onclick = function() {
-  //   chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
-  //         debugger;
-  //     var current = tabs[0];
-  //     var tabID = current.id;
-
-  //       if(document.getElementById('mouseControl').checked){
-  //         storage.set({tabID:"true"});
-  //       } else{
-  //         storage.set({tabID:"false"});
-  //       }
-  //       storage.get(tabID + '', function(inStorage){
-  //             debugger;
-  //         if(inStorage){
-  //            document.getElementById('mouseControl').checked = true;
-  //            chrome.extension.sendMessage({
-  //              type: "enableMouseControl"
-  //            });
-  //         } else{
-  //             document.getElementById('mouseControl').checked = false;
-  //         }
-  //       });
-  //   });
-  // };
-
-
   document.getElementById("mouseControl").onclick = function() {
     chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
       var current = tabs[0];
@@ -70,12 +42,36 @@ window.onload = function() {
 
 };
 
-// // Accepting Access token then displaying to user. 
-// chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-//   debugger;
-//   if(message.accessToken) {
-//     var tokenView = document.getElementById("myHeader");
-//     tokenView.innerHTML = request.accessToken;
-//   }
-//   return true;
-// });
+var qrcode = new QRCode("qrcode", {
+  width: 100,
+  height: 100,
+});
+
+function makeCode (token) {
+  var url = "http://chromeconnect.nodejitsu.com/";
+  var newUrl = url + token;
+  qrcode.makeCode(newUrl);
+}
+
+// Accepting Access token then displaying to user. 
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+  if(request.type === "showQR") {
+    console.log(request.token);
+    makeCode(request.token);
+  }
+  return true;
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+

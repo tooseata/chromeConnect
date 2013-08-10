@@ -25,6 +25,7 @@ var socketUrl = 'http://' + location.hostname + ':80';
       var isTouchable = function(){
         var urlPath = document.location.pathname;
         var sessionHash = urlPath.substring(1,urlPath.lenght);
+        debugger;
         socket.emit('initiateController', {sessionHash: sessionHash});
         socket.on('controllerAuthorization', function (data) {
           if(data){

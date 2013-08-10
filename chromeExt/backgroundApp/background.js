@@ -1,5 +1,5 @@
 var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-//var socketserver = 'http://127.0.0.1:7070';
+//var socketserver = 'http://127.0.0.1:9999';
 var channelTabs = [];
 var activeTab;
 
@@ -66,7 +66,17 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('desktopAccessToken', function(data){
-      alert("Go to www.chromeconnect.nodejitsu.com/" + data);
+      chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
+        console.log(tabs);
+        var current = tabs[0];
+
+        chrome.extension.sendMessage({
+              "type": "showQR",
+              "token": data
+        });
+      });
+
+      console.log("Go to www.chromeconnect.nodejitsu.com/" + data);
     });
 
     socket.on('linkMobileDevice', function(data){

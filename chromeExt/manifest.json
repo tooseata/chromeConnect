@@ -1,14 +1,14 @@
 {
   "name": "ChromeConnect",
 
-  "version": "1.1",
+  "version": "0.1",
 
   "manifest_version": 2,
 
-  "description": "Web Socket Browser Control",
+  "description": "Web based Browser Navigation Control",
 
   "browser_action": {
-    "default_title": "Configure Stuf",
+    "default_title": "Chrome Connect Settings",
     "default_icon": "icons/icon.png", 
     "default_popup": "browseraction/popup.html"
   },

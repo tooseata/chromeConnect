@@ -63,6 +63,7 @@ var setOrigin = function(x, y){
   var transform = 'translate('+ x +'px,'+ y +'px)';
   document.body.style.WebkitTransformOrigin = origin;
   document.body.style.WebkitTransform = transform;
+  document.body.style.WebkitTransition = '-webkit-transform 0.8s ease';
 };
 
 
