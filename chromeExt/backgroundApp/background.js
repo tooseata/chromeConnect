@@ -23,6 +23,7 @@ chrome.tabs.onActivated.addListener(function(info) {
   if(info){
     activeTab = info.tabId;
   }
+
 });
 
 // coming from the popup
@@ -95,12 +96,12 @@ var socketConnection = function(type, tabID, windowID) {
 
     socket.on('swipe', function(data){
       var notificationType = {"type": "swipe", "swipeDirection":data.direction, "fingerCount":data.fingerCount, "swipeDuration": data.duration, "swipDistance":data.distance};
-      //console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
+      console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('move', function(data){
-      console.log("Move Data " + data);
+      console.log("Move Data", data);
       var notificationType = {"type": "navigation", "xVal" : data.dx, "yVal" : data.dy};
       chrome.tabs.sendMessage(activeTab, notificationType);
 
@@ -130,9 +131,9 @@ var socketConnection = function(type, tabID, windowID) {
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
-    socket.on('changeTab', function(data){
-       console.log('changeTab');
-      var notificationType = {"type": "changeTab"};
+    socket.on('click', function(data){
+       console.log('click');
+      var notificationType = {"type": "click"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 

@@ -24,8 +24,6 @@ app.configure(function(){
 app.get('/:connectid', function(req, res){
   res.status(200);
   res.sendfile(root + '/public/index.html');
-  console.log(req.params.connectid);
-
 });
 
 io.sockets.on('connection', function(socket){
@@ -129,10 +127,10 @@ io.sockets.on('connection', function(socket){
     }
   });
 
-  socket.on('changeTab', function(data){
+  socket.on('click', function(data){
     var token = data.sessionHash;
     if(token in socketCodes){
-      socketCodes[token].emit("changeTab", {});
+      socketCodes[token].emit("click", {});
     }
   });
 }); // Main Connect

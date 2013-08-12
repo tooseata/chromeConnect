@@ -37,8 +37,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.type === "zoomTap"){
      console.log('zoomTap');
      zoom.to({x: tempClientX,y: tempClientY,scale: 3});
-  } else if (request.type === "changeTab"){
-     console.log('Change Tab');
+  } else if (request.type === "click"){
+     console.log('click');
   }
 });
 
@@ -86,39 +86,66 @@ var pageScroll = function(direction,distance,duration){
     if(self.pageYOffset === 0){
       return;
     } else {
-      smoothScroll(-Math.abs(distance));
+      smoothScroll(-Math.abs(distance),"vertical");
     }
   } else if (direction === "down"){
-      smoothScroll(distance);
-  } else {
-    // TODO
-    // Check mouse pointer focus if side scrolling is accepted. 
+      smoothScroll(distance, "vertical");
+  } else if (direction === "right"){
+      smoothScroll(distance, "horizontal");
+  } else if (direction === "left"){
+      smoothScroll(-Math.abs(distance), "horizontal");
   }
 };
 
-function smoothScroll(distance) {
-  var startY   = self.pageYOffset;
-  distance = distance + startY;
-  var stopY    = distance;
-  if (distance < 25) {
-    scrollTo(0, stopY); return;
+var smoothScroll = function (distance, direction) {
+  
+  var startPosition;
+  if(direction === "vertical"){
+    startPosition = self.pageYOffset;
+    distance = distance + startPosition;
+    var stopPosition = distance;
+    if (distance < 25) {
+      scrollTo(0, stopPosition); return;
+    }
+    var speed = Math.round(distance / 100);
+    if (speed >= 20) speed = 20;
+    var step  = Math.round(distance / 25);
+    var leapY = stopPosition > startPosition ? startPosition + step : startPosition - step;
+    var timer = 0;
+    if (stopPosition > startPosition) {
+      for (var i=startPosition; i<stopPosition; i+=step ) {
+        setTimeout("self.scrollTo(0, "+leapY+")", timer * speed);
+        leapY += step; if (leapY > stopPosition) leapY = stopPosition; timer++;
+      } return;
+    }
+      for (var i = startPosition; i>stopPosition; i-=step ) {
+        setTimeout("self.scrollTo(0, "+leapY+")", timer * speed);
+        leapY -= step; if (leapY < stopPosition) leapY = stopPosition; timer++;
+      }
+  } else if (direction === "horizontal"){
+    startPosition = self.pageXOffset;
+    distance = distance + startPosition;
+    var stopPosition = distance;
+    if (distance < 25) {
+      scrollTo(stopPosition, 0); return;
+    }
+    var speed = Math.round(distance / 100);
+    if (speed >= 20) speed = 20;
+    var step  = Math.round(distance / 25);
+    var leapX = stopPosition > startPosition ? startPosition + step : startPosition - step;
+    var timer = 0;
+    if (stopPosition > startPosition) {
+      for (var i=startPosition; i<stopPosition; i+=step ) {
+        setTimeout("self.scrollTo("+leapX+", 0)", timer * speed);
+        leapX += step; if (leapX > stopPosition) leapX = stopPosition; timer++;
+      } return;
+    }
+      for (var i = startPosition; i>stopPosition; i-=step ) {
+        setTimeout("self.scrollTo("+leapX+", 0)", timer * speed);
+        leapX -= step; if (leapX < stopPosition) leapX = stopPosition; timer++;
+      }
   }
-  var speed = Math.round(distance / 100);
-  if (speed >= 20) speed = 20;
-  var step  = Math.round(distance / 25);
-  var leapY = stopY > startY ? startY + step : startY - step;
-  var timer = 0;
-  if (stopY > startY) {
-    for (var i=startY; i<stopY; i+=step ) {
-      setTimeout("self.scrollTo(0, "+leapY+")", timer * speed);
-      leapY += step; if (leapY > stopY) leapY = stopY; timer++;
-    } return;
-  }
-  for (var i=startY; i>stopY; i-=step ) {
-    setTimeout("self.scrollTo(0, "+leapY+")", timer * speed);
-    leapY -= step; if (leapY < stopY) leapY = stopY; timer++;
-  }
-}
+};
 
 var pageToporBottom = function(direction, duration){
   var scrollSpeed = duration < 200 ? -600 : -400;
@@ -221,8 +248,12 @@ var movePointer = function(xPos, yPos, type) {
 
 
 var moveCallback = function (e) {
+  console.log("e.webkitMovementX", e.webkitMovementX);
+  console.log("e.webkitMovementY", e.webkitMovementY);
     tempX += e.webkitMovementX;
     tempY += e.webkitMovementY;
+  console.log("tempX", tempX);
+  console.log("tempY", tempY);
     // tempClientX = e.clientX;
     // tempClientY = e.clientY;
     currentX = tempX + tempClientX;
@@ -230,7 +261,8 @@ var moveCallback = function (e) {
 
     if(currentX < 0 || currentX > windowWidth || currentY< 0 || currentY > windowHeight){
         //document.webkitExitPointerLock();
-        //console.log('Off screen');
+        console.log('Off screen');
+        return;
     } else{
         movePointer(currentX,currentY,"nativeDirection");
     }
