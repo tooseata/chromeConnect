@@ -12,7 +12,12 @@ var element = document.body;
 var lastPinchOutTotal = 0;
 var lastPinchInTotal = 0;
 
+// Listener for calculating Mouse X and Y position. 
+element.addEventListener("mousemove", function(event){
+  tempClientX = event.clientX;
+  tempClientY = event.clientY;
 
+});
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.type === "swipe" && request.fingerCount === 2) {
@@ -38,7 +43,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
      console.log('zoomTap');
      zoom.to({x: tempClientX,y: tempClientY,scale: 3});
   } else if (request.type === "click"){
-     console.log('click');
+     console.log('Firing Click');
+     createClick();
   }
 });
 
@@ -48,8 +54,6 @@ var pinchPageIn = function (zoomScale){
   var pinchAmount = zoomScale * .2;
   var scaleIn = (pinchAmount + (lastPinchInTotal * .2)).toFixed(2);
   console.log('scaleIn', scaleIn);
-  // var origScale = tempClientX + "px " + tempClientY+ "px";
-  // document.body.style.setProperty("-webkit-transform-origin", origScale, null);
   if (scaleIn >= 1.0 && scaleIn <= 3.0) {
     setOrigin(tempClientX,tempClientY);
     document.body.style.setProperty("-webkit-transform", "scale(" + scaleIn + "," + scaleIn + ")", null);
@@ -79,9 +83,7 @@ var pinchPageOut = function (zoomScale){
 };
 
 var pageScroll = function(direction,distance,duration){
-
   distance = (distance * 4);
-
   if (direction === "up"){
     if(self.pageYOffset === 0){
       return;
@@ -212,14 +214,6 @@ element.addEventListener("click", function (e) {
 });
 
 
-element.addEventListener("mousemove", function(event){
-  tempClientX = event.clientX;
-  tempClientY = event.clientY;
-
-});
-
-
-
 var makePointer = function() {
     var chromeConnectPointer = chrome.extension.getURL('icons/arrow-cursor.png');
     var image = document.createElement('image');
@@ -236,32 +230,53 @@ var movePointer = function(xPos, yPos, type) {
     pointer.style.left = xPos+'px';
     pointer.style.top = yPos+'px';
   } else {
+    console.log("Syn xPos (Passed in X)", xPos);
+    console.log("Syn yPos (Passed in Y)", yPos);
+    console.log("Syn tempX before", tempX);
+    console.log("Syn tempY before", tempY);
     tempX += xPos;
     tempY += yPos;
+    console.log("Syn tempX after", tempX);
+    console.log("Syn tempY after", tempY);
     currentX = tempX + tempClientX;
     currentY = tempY + tempClientY;
-    pointer.style.left = (currentX/3) +'px';
-    pointer.style.top = (currentY/3) +'px';
+    console.log("Syn currentX", currentX);
+    console.log("Syn currentY", currentY);
+    pointer.style.left = currentX +'px';
+    pointer.style.top = currentY +'px';
   }
 
 };
 
 
 var moveCallback = function (e) {
-  console.log("e.webkitMovementX", e.webkitMovementX);
-  console.log("e.webkitMovementY", e.webkitMovementY);
+  console.log("Navtive tempX before", tempX);
+  console.log("Navtive tempY before", tempY);
+  console.log("Navtive e.webkitMovementX", e.webkitMovementX);
+  console.log("Navtive e.webkitMovementY", e.webkitMovementY);
     tempX += e.webkitMovementX;
     tempY += e.webkitMovementY;
-  console.log("tempX", tempX);
-  console.log("tempY", tempY);
-    // tempClientX = e.clientX;
-    // tempClientY = e.clientY;
+  console.log("Navtive tempX after", tempX);
+  console.log("Navtive tempY after", tempY);
+  console.log("Navtive tempClientX", tempClientX);
+  console.log("Navtive tempClientY", tempClientY);
+  console.log("Navtive currerntX before", currentX);
+  console.log("Navtive currentY before", currentY);
     currentX = tempX + tempClientX;
     currentY = tempY + tempClientY;
+  console.log("Navtive currerntX after", currentX);
+  console.log("Navtive currentY after", currentY);
 
-    if(currentX < 0 || currentX > windowWidth || currentY< 0 || currentY > windowHeight){
-        //document.webkitExitPointerLock();
+    if(currentX <= 0 || currentX >= windowWidth || currentY <= 0 || currentY >= windowHeight){
         console.log('Off screen');
+        var ee = document.createEvent("MouseEvents");
+        x = currentX;
+        y = currentY;
+        ee.initMouseEvent("mousemove", true, true, null, 1,x,y,x,y);
+        //var target = document.elementFromPoint(x, y);
+        document.dispatchEvent(ee);
+        document.webkitExitPointerLock();
+        
         return;
     } else{
         movePointer(currentX,currentY,"nativeDirection");
@@ -270,6 +285,7 @@ var moveCallback = function (e) {
 
 
 var logClick = function (e){
+
     console.log('Clicking');
     console.log(e._isSynthetic);
     if (e._isSynthetic){
@@ -293,6 +309,19 @@ var logClick = function (e){
       e.stopPropagation();
     }
 };
+
+// var createClick = function(){
+//   var ee = document.createEvent("MouseEvents");
+//     x = currentX;
+//     y = currentY;
+//     ee.initMouseEvent("click", true, true, null, 1,
+//                       x + e.screenX - e.clientX,
+//                       y + e.screenY - e.clientY,
+//                       x,y,e.ctrlKey, e.altKey, 
+//                       e.shiftKey, e.metaKey, 0, null);
+//     var target = document.elementFromPoint(x, y);
+//     target.dispatchEvent(ee);
+// };
 
 function changeCallback() {
     //Check for element whether locked is expected element or not

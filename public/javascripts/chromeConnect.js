@@ -49,7 +49,7 @@ var socketUrl = 'http://' + location.hostname + ':80';
                 fingers:$.fn.swipe.fingers.ALL,
                 threshold: 20
               });
-              
+
               document.body.addEventListener('touchmove', function(event) {
                   event.preventDefault();
                 }, false);

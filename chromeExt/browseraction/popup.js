@@ -3,25 +3,40 @@ var storage = chrome.storage.local;
 window.onload = function() {
 
   storage.get("socketState", function(data){
-    console.log('Current State ' + data.socketState);
+    if (data.socketState === 0){
+        $('#socket-connect-btn').toggleClass('off');
+    } else if (data.socketState === 1){
+        $('#socket-connect-btn').toggleClass('on');
+    } else {
+        $('#socket-connect-btn').toggleClass('off');
+    }
   });
-  
-  document.getElementById("socketConnection").onclick = function() {
-    chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
-      var current = tabs[0];
-      var tabID = current.id;
-      var windowID = current.windowId;
-      storage.remove("currentToken", function(confirm){
-        console.log('Cleared currentToken');
-      });
-      storage.set({"socketState":1});
+
+  storage.get("currentToken", function(data){
+    if (data.currentToken !== undefined){
+      makeCode(data.currentToken);
+    }
+  });
+
+  document.getElementById("socket-connect-btn").onclick = function() {
+    if($('#socket-connect-btn').hasClass('on')){
       // Sends to background script
       chrome.extension.sendMessage({
-            "type": "loadSocketConnection",
-            "windowID": windowID,
-            "tabID": tabID
+        type: "disconnectSocketConnection"
       });
-    });
+    } else {
+      chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
+        var current = tabs[0];
+        var tabID = current.id;
+        var windowID = current.windowId;
+        // Sends to background script
+        chrome.extension.sendMessage({
+              "type": "loadSocketConnection",
+              "windowID": windowID,
+              "tabID": tabID
+        });
+      });
+    }
   };
 
   document.getElementById("mouseControl").onclick = function() {
@@ -38,21 +53,6 @@ window.onload = function() {
       });
     });
   };
-
-  document.getElementById("socketDisconnection").onclick = function() {
-    // Sends to background script
-    chrome.extension.sendMessage({
-          type: "disconnectSocketConnection"
-      });
-  };
-
-
-  document.getElementById("reloadQR").onclick = function() {
-      storage.get("currentToken", function(data){
-        makeCode(data.currentToken);
-      });
-  };
-
 };
 
 var qrcode = new QRCode("qrcode", {

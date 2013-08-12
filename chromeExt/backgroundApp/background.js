@@ -2,6 +2,15 @@ var socketserver = 'http://chromeconnect.nodejitsu.com:80';
 //var socketserver = 'http://127.0.0.1:9999';
 var channelTabs = [];
 var activeTab;
+var storage = chrome.storage.local;
+
+storage.remove("socketState", function(confirm){
+  console.log('Cleared Socket State');
+});
+
+storage.remove("currentToken", function(confirm){
+  console.log('Cleared Current Token');
+});
 
 chrome.extension.onConnect.addListener(function(port) {
         var tabId = port.sender.tab.id;
@@ -34,11 +43,13 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         socketConnection(request.type, request.tabID, request.windowID);
         chrome.browserAction.setBadgeBackgroundColor({color: "#0000FF"});
         chrome.browserAction.setBadgeText({text: "Wait"});
+        storage.set({"socketState":1});
         break;
 
         case "disconnectSocketConnection":
         socketConnection(request.type, request.tabID, request.windowID);
         chrome.browserAction.setBadgeText({text: ""});
+        storage.set({"socketState":0});
         break;
 
         case "enableMouseControl":

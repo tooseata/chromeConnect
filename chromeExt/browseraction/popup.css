@@ -1,0 +1,165 @@
+body {
+  /*background: url('img/micro_carbon.png');*/
+  width:315px;
+
+}
+
+#qrcode{
+  width:100px; 
+  height:100px; 
+  margin-top:10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#connectID{
+  color:#000;
+  font-size: 17px;
+}
+
+section {
+  margin: 25px auto 0 auto;
+  width: 75px;
+  height: 95px;
+  position: relative;
+  text-align: center;
+}
+:active, :focus {
+  outline: 0;
+}
+/** Font-Face **/
+@font-face {
+  font-family: "FontAwesome";
+  src: url("fonts/fontawesome-webfont.eot");
+  src: url("fonts/fontawesome-webfont.eot?#iefix") format('eot'), 
+       url("fonts/fontawesome-webfont.woff") format('woff'), 
+       url("fonts/fontawesome-webfont.ttf") format('truetype'), 
+       url("fonts/fontawesome-webfont.svg#FontAwesome") format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/** Styling the Button **/
+a.iobutton {
+  font-family: "FontAwesome";
+  text-shadow: 0px 1px 1px rgba(250,250,250,0.1);
+  font-size: 32pt;
+  display: block;
+  position: relative;
+  text-decoration: none;
+    box-shadow: 0px 3px 0px 0px rgb(34,34,34),
+          0px 7px 10px 0px rgb(17,17,17),
+          inset 0px 1px 1px 0px rgba(250, 250, 250, .2), 
+          inset 0px -12px 35px 0px rgba(0, 0, 0, .5);
+  width: 70px;
+  height: 70px;
+  border: 0;
+  color: rgb(37,37,37);
+  border-radius: 35px;
+  text-align: center;
+  line-height: 79px;
+  background-color: rgb(83,87,93);
+
+  transition: color 350ms ease, text-shadow 350ms;
+    -o-transition: color 350ms ease, text-shadow 350ms;
+    -moz-transition: color 350ms ease, text-shadow 350ms;
+    -webkit-transition: color 350ms ease, text-shadow 350ms;
+}
+a:before.iobutton {
+  content: "";
+  width: 80px;
+  height: 80px;
+  display: block;
+  z-index: -2;
+  position: absolute;
+  background-color: rgb(26,27,29);
+  left: -5px;
+  top: -2px;
+  border-radius: 40px;
+  box-shadow: 0px 1px 0px 0px rgba(250,250,250,0.1), 
+        inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+}
+a:active.iobutton {
+    box-shadow: 0px 0px 0px 0px rgb(34,34,34),
+          0px 3px 7px 0px rgb(17,17,17),
+          inset 0px 1px 1px 0px rgba(250, 250, 250, .2), 
+          inset 0px -10px 35px 5px rgba(0, 0, 0, .5);
+    background-color: rgb(83,87,93);
+    top: 3px;
+}
+a.on.iobutton {
+    box-shadow: 0px 0px 0px 0px rgb(34,34,34),
+          0px 3px 7px 0px rgb(17,17,17), 
+          inset 0px 1px 1px 0px rgba(250, 250, 250, .2), 
+          inset 0px -10px 35px 5px rgba(0, 0, 0, .5);
+    background-color: rgb(83,87,93);
+    top: 3px;
+  color: #fff;
+    text-shadow: 0px 0px 3px rgb(250,250,250);
+}
+a:active:before.iobutton, a.on:before.iobutton {
+  top: -5px;
+  background-color: rgb(26,27,29);
+  box-shadow: 0px 1px 0px 0px rgba(250,250,250,0.1), 
+        inset 0px 1px 2px rgba(0, 0, 0, 0.5);
+}
+/* Styling the Indicator light */
+a + span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: rgb(226,0,0);
+  box-shadow: inset 0px 1px 0px 0px rgba(250,250,250,0.5),
+        0px 0px 3px 2px rgba(226,0,0,0.5);
+  border-radius: 4px;
+  clear: both;
+  position: absolute;
+  bottom: 0;
+  left: 42%;
+  transition: background-color 350ms, box-shadow 700ms;
+  -o-transition: background-color 350ms, box-shadow 700ms;
+  -moz-transition: background-color 350ms, box-shadow 700ms;
+  -webkit-transition: background-color 350ms, box-shadow 700ms;
+}
+a.on + span {
+  box-shadow: inset 0px 1px 0px 0px rgba(250,250,250,0.5),
+        0px 0px 3px 2px rgba(135,187,83,0.5);
+  background-color: rgb(135,187,83);
+}
+#centerBtn{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  float: left;
+  width: 100%;
+  text-align: center;
+}
+
+button.mouseControl-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: #ffffff;
+  padding: 5px 20px;
+  background: -webkit-gradient(
+    linear, left top, left bottom, 
+    from(#ff2819),
+    to(#ab0000));
+  -webkit-border-radius: 0px;
+  border: 1px solid #7d0000;
+  -webkit-box-shadow:
+    0px 1px 3px rgba(000,000,000,0.5),
+    inset 0px 0px 2px rgba(255,255,255,0.7);
+  text-shadow:
+    0px -1px 0px rgba(000,000,000,0.4),
+    0px 1px 0px rgba(255,255,255,0.3);
+}
+button.mouseControl-btn:hover {
+  background: -webkit-gradient(
+    linear, left top, left bottom, 
+    from(#b34332),
+    to(#ab0000));
+  cursor: pointer;
+}
+
+button.mouseControl-btn:active {
+  position:relative;
+  top:1px;
+}

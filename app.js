@@ -14,7 +14,8 @@ var io = require('socket.io').listen(server);
 var socketCodes = {};
 
 app.get('/', function(req, res){
-  res.send("You need a valid ID to start your chrome connection");
+  res.status(200);
+  res.sendfile(root + '/public/splash.html');
 });
 
 app.configure(function(){

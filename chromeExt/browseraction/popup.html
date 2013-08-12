@@ -1,16 +1,21 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="popup.css">
 <script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="qrcode.min.js"></script>
 </head>
 <body>
-<button id="socketConnection">Activate</button>
-<button id="socketDisconnection">Deactivate</button>
-<button id="mouseControl"> Mouse Control</button>
-<p><a href="#" id="reloadQR">Reload QR</a></p>
+<section>
+  <a href="#" class="iobutton" id="socket-connect-btn">&#xF011;</a>
+  <span></span>
+</section>
+<div id="qrcode"></div><br>
 <span id="connectID"></span>
-<div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div><br />
+<span id="centerBtn">
+  <button type="button" id="mouseControl" class="mouseControl-btn">Control Pointer</button>
+</span>
 <script type="text/javascript" src="popup.js"></script>
 </body>
 </html>
