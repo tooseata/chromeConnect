@@ -189,6 +189,7 @@ var fixedPointerOn = function(){
 // Pointer Control 
 element.addEventListener("click", function (e) {
   if (e.target.id === "testSpash"){
+    console.log('I clicked on test splash');
     //Check whether browser supports locking or not
     var havePointerLock = 'webkitPointerLockElement' in document;
       if (havePointerLock) {
@@ -204,6 +205,8 @@ element.addEventListener("click", function (e) {
           tempX = 0;
           tempY = 0;
           //Register lock change callback
+          var removeSplash = document.getElementById("testSpash");
+          removeSplash.parentNode.removeChild(removeSplash);
           document.addEventListener('webkitpointerlockchange', changeCallback, false);
           //Register callback for all errors
           document.addEventListener('webkitpointerlockerror', errorCallback, false);
@@ -230,16 +233,14 @@ var movePointer = function(xPos, yPos, type) {
     pointer.style.left = xPos+'px';
     pointer.style.top = yPos+'px';
   } else {
-    console.log("Syn xPos (Passed in X)", xPos);
-    console.log("Syn yPos (Passed in Y)", yPos);
     console.log("Syn tempX before", tempX);
     console.log("Syn tempY before", tempY);
     tempX += xPos;
     tempY += yPos;
     console.log("Syn tempX after", tempX);
     console.log("Syn tempY after", tempY);
-    currentX = tempX + tempClientX;
-    currentY = tempY + tempClientY;
+    currentX = tempX / 10;
+    currentY = tempY / 10;
     console.log("Syn currentX", currentX);
     console.log("Syn currentY", currentY);
     pointer.style.left = currentX +'px';
@@ -254,27 +255,29 @@ var moveCallback = function (e) {
   console.log("Navtive tempY before", tempY);
   console.log("Navtive e.webkitMovementX", e.webkitMovementX);
   console.log("Navtive e.webkitMovementY", e.webkitMovementY);
-    tempX += e.webkitMovementX;
-    tempY += e.webkitMovementY;
+  tempX += e.webkitMovementX;
+  tempY += e.webkitMovementY;
   console.log("Navtive tempX after", tempX);
   console.log("Navtive tempY after", tempY);
   console.log("Navtive tempClientX", tempClientX);
   console.log("Navtive tempClientY", tempClientY);
   console.log("Navtive currerntX before", currentX);
   console.log("Navtive currentY before", currentY);
-    currentX = tempX + tempClientX;
-    currentY = tempY + tempClientY;
+  currentX = tempX + tempClientX;
+  currentY = tempY + tempClientY;
   console.log("Navtive currerntX after", currentX);
   console.log("Navtive currentY after", currentY);
 
     if(currentX <= 0 || currentX >= windowWidth || currentY <= 0 || currentY >= windowHeight){
-        console.log('Off screen');
-        var ee = document.createEvent("MouseEvents");
-        x = currentX;
-        y = currentY;
-        ee.initMouseEvent("mousemove", true, true, null, 1,x,y,x,y);
-        //var target = document.elementFromPoint(x, y);
-        document.dispatchEvent(ee);
+
+      // Creates a mouse move event that puts the native mouse in the last position of the synthetic mouse.
+        // console.log('Off screen');
+        // var ee = document.createEvent("MouseEvents");
+        // x = currentX;
+        // y = currentY;
+        // ee.initMouseEvent("mousemove", true, true, null, 1,x,y,x,y);
+        // //var target = document.elementFromPoint(x, y);
+        // document.dispatchEvent(ee);
         document.webkitExitPointerLock();
         
         return;

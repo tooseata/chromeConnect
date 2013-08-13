@@ -11,10 +11,12 @@
 #testSpash{
   z-index: 1000000000;
   position: absolute;
-  width: 200px;
-  height:200px;
   top:0;
   left:0;
-  fill: #3080d0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  opacity: 0;
+-webkit-transition: opacity 400ms ease-in;
 
 }
