@@ -13,10 +13,9 @@ var lastPinchOutTotal = 0;
 var lastPinchInTotal = 0;
 
 // Listener for calculating Mouse X and Y position. 
-element.addEventListener("mousemove", function(event){
-  tempClientX = event.clientX;
-  tempClientY = event.clientY;
-
+element.addEventListener("mousemove", function(e){
+  tempClientX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+  tempClientY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
 });
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -37,23 +36,17 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   } else if (request.type === "pinchOutTotal"){
       lastPinchOutTotal = request.zoomScale;
   } else if (request.type === "zoomTapUndo"){
-     console.log('zoomTapUndo');
      zoom.out();
   } else if (request.type === "zoomTap"){
-     console.log('zoomTap');
      zoom.to({x: tempClientX,y: tempClientY,scale: 3});
   } else if (request.type === "click"){
-     console.log('Firing Click');
      createClick();
   }
 });
 
 var pinchPageIn = function (zoomScale){
-  console.log('Increasing Zoom');
-  console.log('lastPinchInTotal', lastPinchInTotal);
-  var pinchAmount = zoomScale * .2;
-  var scaleIn = (pinchAmount + (lastPinchInTotal * .2)).toFixed(2);
-  console.log('scaleIn', scaleIn);
+  var pinchAmount = zoomScale * .5;
+  var scaleIn = (pinchAmount + (lastPinchInTotal * .5)).toFixed(2);
   if (scaleIn >= 1.0 && scaleIn <= 3.0) {
     setOrigin(tempClientX,tempClientY);
     document.body.style.setProperty("-webkit-transform", "scale(" + scaleIn + "," + scaleIn + ")", null);
@@ -72,10 +65,10 @@ var setOrigin = function(x, y){
 
 
 var pinchPageOut = function (zoomScale){
-  var pinchAmount = zoomScale * .7 ;
-  var scaleOut = (pinchAmount - (lastPinchOutTotal * .7)).toFixed(2);
-  console.log('scaleOut', scaleOut);
+  var pinchAmount = zoomScale;
+  var scaleOut = (pinchAmount - (lastPinchOutTotal)).toFixed(2);
   if(scaleOut <= 1.0){
+    zoom.out();
     return false;
   } else {
     document.body.style.setProperty("-webkit-transform", "scale(" + scaleOut + "," + scaleOut + ")", null);
@@ -100,7 +93,6 @@ var pageScroll = function(direction,distance,duration){
 };
 
 var smoothScroll = function (distance, direction) {
-  
   var startPosition;
   if(direction === "vertical"){
     startPosition = self.pageYOffset;
@@ -179,7 +171,6 @@ var pageToporBottom = function(direction, duration){
 
 
 var fixedPointerOn = function(){
-    console.log('Creating Splah');
     var newDiv = document.createElement('image');
     newDiv.id = 'testSpash';
     document.body.appendChild(newDiv);
@@ -189,7 +180,7 @@ var fixedPointerOn = function(){
 // Pointer Control 
 element.addEventListener("click", function (e) {
   if (e.target.id === "testSpash"){
-    console.log('I clicked on test splash');
+
     //Check whether browser supports locking or not
     var havePointerLock = 'webkitPointerLockElement' in document;
       if (havePointerLock) {
@@ -213,7 +204,7 @@ element.addEventListener("click", function (e) {
       } else {
           alert("Your browser does not support Pointer Lock, Please Upgrade it");
       }
-    }
+  }
 });
 
 
@@ -227,60 +218,36 @@ var makePointer = function() {
 
 
 var movePointer = function(xPos, yPos, type) {
-  console.log(type);
   var pointer = document.getElementById("newPointer_chromeConnect");
   if (type === "nativeDirection"){
     pointer.style.left = xPos+'px';
     pointer.style.top = yPos+'px';
   } else {
-    console.log("Syn tempX before", tempX);
-    console.log("Syn tempY before", tempY);
-    tempX += xPos;
-    tempY += yPos;
-    console.log("Syn tempX after", tempX);
-    console.log("Syn tempY after", tempY);
-    currentX = tempX / 10;
-    currentY = tempY / 10;
-    console.log("Syn currentX", currentX);
-    console.log("Syn currentY", currentY);
-    pointer.style.left = currentX +'px';
-    pointer.style.top = currentY +'px';
+      tempX += xPos;
+      tempY += yPos;
+      currentX = tempX + tempClientX;
+      currentY = tempY + tempClientY;
+      if(currentX <= 0 || currentX >= windowWidth || currentY <= 0 || currentY >= windowHeight){
+        document.webkitExitPointerLock();
+      } else {
+        pointer.style.left = currentX +'px';
+        pointer.style.top = currentY +'px';
+      }
   }
 
 };
 
 
 var moveCallback = function (e) {
-  console.log("Navtive tempX before", tempX);
-  console.log("Navtive tempY before", tempY);
-  console.log("Navtive e.webkitMovementX", e.webkitMovementX);
-  console.log("Navtive e.webkitMovementY", e.webkitMovementY);
   tempX += e.webkitMovementX;
   tempY += e.webkitMovementY;
-  console.log("Navtive tempX after", tempX);
-  console.log("Navtive tempY after", tempY);
-  console.log("Navtive tempClientX", tempClientX);
-  console.log("Navtive tempClientY", tempClientY);
-  console.log("Navtive currerntX before", currentX);
-  console.log("Navtive currentY before", currentY);
   currentX = tempX + tempClientX;
   currentY = tempY + tempClientY;
-  console.log("Navtive currerntX after", currentX);
-  console.log("Navtive currentY after", currentY);
+
 
     if(currentX <= 0 || currentX >= windowWidth || currentY <= 0 || currentY >= windowHeight){
-
-      // Creates a mouse move event that puts the native mouse in the last position of the synthetic mouse.
-        // console.log('Off screen');
-        // var ee = document.createEvent("MouseEvents");
-        // x = currentX;
-        // y = currentY;
-        // ee.initMouseEvent("mousemove", true, true, null, 1,x,y,x,y);
-        // //var target = document.elementFromPoint(x, y);
-        // document.dispatchEvent(ee);
-        document.webkitExitPointerLock();
-        
-        return;
+      document.webkitExitPointerLock(); 
+      return;
     } else{
         movePointer(currentX,currentY,"nativeDirection");
     }
@@ -289,14 +256,12 @@ var moveCallback = function (e) {
 
 var logClick = function (e){
 
-    console.log('Clicking');
-    console.log(e._isSynthetic);
     if (e._isSynthetic){
       return;
     }
     var ee = document.createEvent("MouseEvents");
     ee._isSynthetic = true;
-    x = currentX;
+    x = currentX ;
     y = currentY;
     ee.initMouseEvent("click", true, true, null, 1,
                       x + e.screenX - e.clientX,
@@ -304,7 +269,6 @@ var logClick = function (e){
                       x,y,e.ctrlKey, e.altKey, 
                       e.shiftKey, e.metaKey, 0, null);
     var target = document.elementFromPoint(x, y);
-    console.log("Target", target);
     if (target){
       target.dispatchEvent(ee);
     } else{
@@ -313,18 +277,21 @@ var logClick = function (e){
     }
 };
 
-// var createClick = function(){
-//   var ee = document.createEvent("MouseEvents");
-//     x = currentX;
-//     y = currentY;
-//     ee.initMouseEvent("click", true, true, null, 1,
-//                       x + e.screenX - e.clientX,
-//                       y + e.screenY - e.clientY,
-//                       x,y,e.ctrlKey, e.altKey, 
-//                       e.shiftKey, e.metaKey, 0, null);
-//     var target = document.elementFromPoint(x, y);
-//     target.dispatchEvent(ee);
-// };
+var createClick = function(){
+  var ee = document.createEvent("MouseEvents");
+    x = currentX;
+    y = currentY;
+    ee.initMouseEvent("click", true, true, null, 1,
+                      x,y,x,y,false, false, 
+                      false, false, 0, null);
+    var target = document.elementFromPoint(x, y);
+    if (target){
+      target.dispatchEvent(ee);
+    } else{
+      e.preventDefault();
+      e.stopPropagation();
+    }
+};
 
 function changeCallback() {
     //Check for element whether locked is expected element or not

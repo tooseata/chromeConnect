@@ -53,7 +53,6 @@ io.sockets.on('connection', function(socket){
 
   socket.on('initiateController', function(data){
     var isValidSession = data.sessionHash;
-    //console.log("isValidSession ___________ ", isValidSession);
     // Cycle through all the desktop clients and find the browser with the same token as the mobile device 
     if (isValidSession in socketCodes){
        // emit to Desktop Pair

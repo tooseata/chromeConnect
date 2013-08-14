@@ -73,13 +73,11 @@ var socketConnection = function(type, tabID, windowID) {
         console.log('error');
     });
     socket.on('connect', function(){
-      console.log('Socket Connected', socket);
       socket.emit('initiateDesktop', {"sessionTab": tabID, "sessionWindow": windowID});
     });
 
     socket.on('desktopAccessToken', function(data){
       chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
-        console.log(tabs);
         var current = tabs[0];
 
         chrome.extension.sendMessage({
@@ -87,8 +85,6 @@ var socketConnection = function(type, tabID, windowID) {
               "token": data
         });
       });
-
-      console.log("Go to www.chromeconnect.nodejitsu.com/" + data);
     });
 
     socket.on('linkMobileDevice', function(data){
@@ -102,17 +98,17 @@ var socketConnection = function(type, tabID, windowID) {
       }
       chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
       chrome.browserAction.setBadgeText({text: "Live"});
-      console.log("Verify: ", data);
+      // console.log("Verify: ", data);
     });
 
     socket.on('swipe', function(data){
       var notificationType = {"type": "swipe", "swipeDirection":data.direction, "fingerCount":data.fingerCount, "swipeDuration": data.duration, "swipDistance":data.distance};
-      console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
+      // console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('move', function(data){
-      console.log("Move Data", data);
+      // console.log("Move Data", data);
       var notificationType = {"type": "navigation", "xVal" : data.dx, "yVal" : data.dy};
       chrome.tabs.sendMessage(activeTab, notificationType);
 
@@ -121,51 +117,42 @@ var socketConnection = function(type, tabID, windowID) {
     socket.on('pinchIn', function(data){
       var notificationType = {"type": "pinchIn", "zoomScale" : data.zoomScale};
       chrome.tabs.sendMessage(activeTab, notificationType);
-      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
+      // console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
     socket.on('pinchOut', function(data){
       var notificationType = {"type": "pinchOut", "zoomScale" : data.zoomScale};
       chrome.tabs.sendMessage(activeTab, notificationType);
-      console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
+      // console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
     socket.on('zoomTapUndo', function(data){
-      console.log('zoomTapUndo');
+      // console.log('zoomTapUndo');
       var notificationType = {"type": "zoomTapUndo"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('zoomTap', function(data){
-      console.log('zoomTap');
+      // console.log('zoomTap');
       var notificationType = {"type": "zoomTap"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('click', function(data){
-       console.log('click');
+       // console.log('click');
       var notificationType = {"type": "click"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
-  } 
+  }
 
   if(type === 'disconnectSocketConnection'){
       socket.disconnect();
-      console.log('You Have Been Disconnected');
+      // console.log('You Have Been Disconnected');
   }
 
   if(type === 'enableMouseControl'){
       var notificationType = {"type": "fixedPointerOn"};
       chrome.tabs.sendMessage(activeTab, notificationType);
   }
-};// End socketConnection
-
-
-// // send a message to the content script
-// var loadSocketsLibary = function() {
-//   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//     chrome.tabs.sendMessage(tabs[0].id, {type: "loadSocketIO"});
-//     chrome.browserAction.setBadgeText({text: "connected!"});
-//   });
-// };
+}; // End socketConnection
