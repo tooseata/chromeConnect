@@ -1,5 +1,6 @@
-var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-//var socketserver = 'http://127.0.0.1:9999';
+//PRODUCTION_
+//var socketserver = 'http://chromeconnect.nodejitsu.com:80';
+var socketserver = 'http://10.0.1.32:8080';
 var channelTabs = [];
 var activeTab;
 var storage = chrome.storage.local;
@@ -47,13 +48,18 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
         case "disconnectSocketConnection":
-        socketConnection(request.type, request.tabID, request.windowID);
         chrome.browserAction.setBadgeText({text: ""});
         storage.set({"socketState":0});
+        socketConnection(request.type, request.tabID, request.windowID);
         break;
 
         case "enableMouseControl":
         console.log('Click ON');
+        socketConnection(request.type, request.tabID, request.windowID);
+        break;
+
+        case "refreshConnection":
+        console.log('Refresh Connection');
         socketConnection(request.type, request.tabID, request.windowID);
         break;
 
@@ -98,17 +104,14 @@ var socketConnection = function(type, tabID, windowID) {
       }
       chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
       chrome.browserAction.setBadgeText({text: "Live"});
-      // console.log("Verify: ", data);
     });
 
     socket.on('swipe', function(data){
       var notificationType = {"type": "swipe", "swipeDirection":data.direction, "fingerCount":data.fingerCount, "swipeDuration": data.duration, "swipDistance":data.distance};
-      // console.log("Swipe direction is " + data.direction + " using " + data.fingerCount + " fingers" + " the distance is " + data.distance + " the duration is " + data.duration);
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('move', function(data){
-      // console.log("Move Data", data);
       var notificationType = {"type": "navigation", "xVal" : data.dx, "yVal" : data.dy};
       chrome.tabs.sendMessage(activeTab, notificationType);
 
@@ -117,38 +120,35 @@ var socketConnection = function(type, tabID, windowID) {
     socket.on('pinchIn', function(data){
       var notificationType = {"type": "pinchIn", "zoomScale" : data.zoomScale};
       chrome.tabs.sendMessage(activeTab, notificationType);
-      // console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
     socket.on('pinchOut', function(data){
       var notificationType = {"type": "pinchOut", "zoomScale" : data.zoomScale};
       chrome.tabs.sendMessage(activeTab, notificationType);
-      // console.log("You pinched " + data.direction + " by " + data.distance + "px, zoom scale is "+ data.zoomScale);
     });
 
     socket.on('zoomTapUndo', function(data){
-      // console.log('zoomTapUndo');
       var notificationType = {"type": "zoomTapUndo"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('zoomTap', function(data){
-      // console.log('zoomTap');
       var notificationType = {"type": "zoomTap"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
 
     socket.on('click', function(data){
-       // console.log('click');
       var notificationType = {"type": "click"};
       chrome.tabs.sendMessage(activeTab, notificationType);
     });
-
   }
 
   if(type === 'disconnectSocketConnection'){
       socket.disconnect();
-      // console.log('You Have Been Disconnected');
+  }
+
+  if(type === 'refreshConnection'){
+     socket.socket.reconnect();
   }
 
   if(type === 'enableMouseControl'){

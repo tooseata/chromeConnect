@@ -53,6 +53,21 @@ window.onload = function() {
       });
     });
   };
+
+  document.getElementById("refreshConnection").onclick = function() {
+    chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
+      var current = tabs[0];
+      var tabID = current.id;
+      var windowID = current.windowId;
+
+      // Sends to background script
+      chrome.extension.sendMessage({
+            "type": "refreshConnection",
+            "windowID": windowID,
+            "tabID": tabID
+      });
+    });
+  };
 };
 
 var qrcode = new QRCode("qrcode", {
@@ -62,7 +77,9 @@ var qrcode = new QRCode("qrcode", {
 
 // jQuery 
 var makeCode = function (token) {
-  var url = "http://chromeconnect.nodejitsu.com/";
+  //PRODUCTION_
+  //var url = "http://chromeconnect.nodejitsu.com/";
+  var url = "http://10.0.1.32:8080/"
   var newUrl = url + token;
   qrcode.makeCode(newUrl);
   $('#connectID').text(newUrl);

@@ -136,13 +136,12 @@ io.sockets.on('connection', function(socket){
 }); // Main Connect
 
 io.sockets.on('disconnect', function(socket){
+  console.log('YOU BEEN KILLED');
   if(socket.browserToken in socketCodes){
      delete socketCodes[socket.browserToken];
    }
-}); // Main Disconnect 
-
-
-server.listen(80);
+}); 
+server.listen(8080);
 
 
 
