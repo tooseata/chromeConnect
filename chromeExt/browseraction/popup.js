@@ -7,6 +7,7 @@ window.onload = function() {
         $('#socket-connect-btn').toggleClass('off');
     } else if (data.socketState === 1){
         $('#socket-connect-btn').toggleClass('on');
+        $('#qrcode').css("visibility", "visible");
     } else {
         $('#socket-connect-btn').toggleClass('off');
     }
@@ -20,11 +21,14 @@ window.onload = function() {
 
   document.getElementById("socket-connect-btn").onclick = function() {
     if($('#socket-connect-btn').hasClass('on')){
+      $('#qrcode').css("visibility", "hidden");
       // Sends to background script
       chrome.extension.sendMessage({
         type: "disconnectSocketConnection"
       });
+      window.close();
     } else {
+      $('#qrcode').css("visibility", "visible");
       chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
         var current = tabs[0];
         var tabID = current.id;
@@ -48,6 +52,21 @@ window.onload = function() {
       // Sends to background script
       chrome.extension.sendMessage({
             "type": "enableMouseControl",
+            "windowID": windowID,
+            "tabID": tabID
+      });
+    });
+  };
+
+  document.getElementById("mouseControlOff").onclick = function() {
+    chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
+      var current = tabs[0];
+      var tabID = current.id;
+      var windowID = current.windowId;
+
+      // Sends to background script
+      chrome.extension.sendMessage({
+            "type": "disableMouseControl",
             "windowID": windowID,
             "tabID": tabID
       });
@@ -94,27 +113,22 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   return true;
 });
 
+$('#qrcode').hover(function() {
+        $(this).find('#refreshConnection').show();
+    },
+    function () {
+        $(this).find('#refreshConnection').hide();
+    }
+);
 
 
-
-// if (request.type === "reloadCurrentQR"){
-//     storage.get("currentToken", function(data){
-//       makeCode(data.currentToken);
-//     });
-//   }
-
-// chrome.browserAction.onClicked.addListener(function(info){
-//     if(info){
-//       console.log('Fired');
-//       chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
-//         chrome.extension.sendMessage({
-//           "type": "reloadCurrentQR"
-//         });
-//       });
-//     }
-// });
-
-
+// Popup Message Pipline from background script
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+  // Close Pop after the pairing connection has been made
+  if (request.type === "closeWindow"){
+      window.close();
+  }
+});
 
 
 

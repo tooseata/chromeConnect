@@ -4,6 +4,7 @@ var socketserver = 'http://10.0.1.32:8080';
 var channelTabs = [];
 var activeTab;
 var storage = chrome.storage.local;
+var socket;
 
 storage.remove("socketState", function(confirm){
   console.log('Cleared Socket State');
@@ -15,7 +16,6 @@ storage.remove("currentToken", function(confirm){
 
 chrome.extension.onConnect.addListener(function(port) {
         var tabId = port.sender.tab.id;
-        console.log('Received request from content script', port);
 
         // add tab when opened
         if (channelTabs.indexOf(tabId) == -1) {
@@ -29,12 +29,11 @@ chrome.extension.onConnect.addListener(function(port) {
 });
 
 chrome.tabs.onActivated.addListener(function(info) {
-  console.log('My Tab Changed');
   if(info){
     activeTab = info.tabId;
   }
-
 });
+
 
 // coming from the popup
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -54,30 +53,60 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
         case "enableMouseControl":
-        console.log('Click ON');
+        storage.set({"synthMouse":1});
         socketConnection(request.type, request.tabID, request.windowID);
         break;
 
-        case "refreshConnection":
-        console.log('Refresh Connection');
+        case "disableMouseControl":
+        storage.set({"synthMouse":0});
         socketConnection(request.type, request.tabID, request.windowID);
+        break;
+
+        case "isMouseEnabled":
+        // Check localstorage see user had enabled the Synth Pointer
+        storage.get("synthMouse", function(data){
+          if (data.synthMouse === 1){
+            sendResponse({synthMouse: true});
+          }
+        });
+        break;
+
+        case "refreshConnection":
+        socketConnection(request.type, request.tabID, request.windowID);
+        break;
+
+        case "showQR":
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          activeTab = tabs[0].id;
+          chrome.tabs.sendMessage(activeTab, {"type": "refreshPage"});
+        });
         break;
 
     }
     return true;
 });
 
-
 var socketConnection = function(type, tabID, windowID) {
-  var socket = io.connect(socketserver);
 
   if(type === 'loadSocketConnection'){
+
+    chrome.tabs.getCurrent(function(info) {
+      if(info){
+        activeTab = info.tabId;
+      }
+    });
+
+    if (socket){
+    } else {
+      socket = io.connect(socketserver);
+    };
+
     socket.on('connecting', function () {
-        console.log('Setting Up connection');
     });
+
     socket.on('error', function () {
-        console.log('error');
     });
+
     socket.on('connect', function(){
       socket.emit('initiateDesktop', {"sessionTab": tabID, "sessionWindow": windowID});
     });
@@ -94,7 +123,7 @@ var socketConnection = function(type, tabID, windowID) {
     });
 
     socket.on('linkMobileDevice', function(data){
-
+      
       for(var i = 0, len = channelTabs.length; i < len; i++) {
         chrome.tabs.get(channelTabs[i], function(tab) {
           if(tab.active === true){
@@ -102,13 +131,20 @@ var socketConnection = function(type, tabID, windowID) {
           }
         });
       }
+
       chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
       chrome.browserAction.setBadgeText({text: "Live"});
+        chrome.tabs.query({active:true, currentWindow:true}, function(){
+          chrome.extension.sendMessage({
+            "type": "closeWindow"
+          });
+        });
     });
 
     socket.on('swipe', function(data){
       var notificationType = {"type": "swipe", "swipeDirection":data.direction, "fingerCount":data.fingerCount, "swipeDuration": data.duration, "swipDistance":data.distance};
       chrome.tabs.sendMessage(activeTab, notificationType);
+
     });
 
     socket.on('move', function(data){
@@ -148,11 +184,32 @@ var socketConnection = function(type, tabID, windowID) {
   }
 
   if(type === 'refreshConnection'){
-     socket.socket.reconnect();
+    chrome.tabs.getCurrent(function(info) {
+      if(info){
+        activeTab = info.tabId;
+      }
+    });
+    socket.socket.reconnect();
   }
 
   if(type === 'enableMouseControl'){
       var notificationType = {"type": "fixedPointerOn"};
       chrome.tabs.sendMessage(activeTab, notificationType);
+      chrome.tabs.query({active:true, currentWindow:true}, function(){
+        chrome.extension.sendMessage({
+          "type": "closeWindow"
+        });
+      });
   }
+
+  if(type === 'disableMouseControl'){
+      var notificationType = {"type": "fixedPointerOff"};
+      chrome.tabs.sendMessage(activeTab, notificationType);
+      chrome.tabs.query({active:true, currentWindow:true}, function(){
+        chrome.extension.sendMessage({
+          "type": "closeWindow"
+        });
+      });
+  }
+
 }; // End socketConnection

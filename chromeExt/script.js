@@ -2,15 +2,23 @@
 var port = chrome.runtime.connect();
 var tempX;
 var tempY;
-var tempClientX;
-var tempClientY;
-var currentX;
-var currentY;
+var tempClientX = 10;
+var tempClientY = 10;
+var currentX = 10;
+var currentY = 10;
 var windowWidth = document.body.scrollWidth;
 var windowHeight = document.body.scrollHeight;
 var element = document.body;
 var lastPinchOutTotal = 0;
 var lastPinchInTotal = 0;
+
+
+//Check Local storage is Synt mouse pointer is enabled
+chrome.runtime.sendMessage({type: "isMouseEnabled"}, function(response) {
+  if (response.synthMouse){
+    fixedPointerOn();
+  }
+});
 
 // Listener for calculating Mouse X and Y position. 
 element.addEventListener("mousemove", function(e){
@@ -27,6 +35,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
       movePointer(request.xVal, request.yVal, "syntheticDirection");
   } else if (request.type === "fixedPointerOn"){
       fixedPointerOn();
+  } else if (request.type === "fixedPointerOff"){
+      fixedPointerOff();
   } else if (request.type === "pinchIn"){
       pinchPageIn(request.zoomScale);
   } else if (request.type === "pinchOut"){
@@ -41,7 +51,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
      zoom.to({x: tempClientX,y: tempClientY,scale: 3});
   } else if (request.type === "click"){
      createClick();
-  }
+  } else if (request.type === "refreshPage"){
+     location.reload();
+  } 
 });
 
 var pinchPageIn = function (zoomScale){
@@ -171,16 +183,18 @@ var pageToporBottom = function(direction, duration){
 
 
 var fixedPointerOn = function(){
-    var newDiv = document.createElement('image');
-    newDiv.id = 'testSpash';
-    document.body.appendChild(newDiv);
+  var newDiv = document.createElement('image');
+  newDiv.id = 'testSpash';
+  document.body.appendChild(newDiv);
 }
 
+var fixedPointerOff = function(){
+  document.getElementById("newPointer_chromeConnect").remove();
+}
 
 // Pointer Control 
 element.addEventListener("click", function (e) {
   if (e.target.id === "testSpash"){
-
     //Check whether browser supports locking or not
     var havePointerLock = 'webkitPointerLockElement' in document;
       if (havePointerLock) {
@@ -188,31 +202,33 @@ element.addEventListener("click", function (e) {
           element.requestPointerLock = element.webkitRequestPointerLock;
           element.requestPointerLock();
           var pointer = document.getElementById("newPointer_chromeConnect");
-          if (pointer){
-              pointer.style.visibility = 'visible';
-          } else {
-              makePointer();
-          }
-          tempX = 0;
-          tempY = 0;
+          makePointer();
+          tempX = 5;
+          tempY = 5;
           //Register lock change callback
           var removeSplash = document.getElementById("testSpash");
           removeSplash.parentNode.removeChild(removeSplash);
           document.addEventListener('webkitpointerlockchange', changeCallback, false);
           //Register callback for all errors
           document.addEventListener('webkitpointerlockerror', errorCallback, false);
-      } else {
-          alert("Your browser does not support Pointer Lock, Please Upgrade it");
       }
   }
 });
 
+// var forcePointer = function(){
+//   var pointer = document.getElementById("newPointer_chromeConnect");
+//   makePointer();
+//   document.addEventListener('webkitpointerlockchange', changeCallback, false);
+//   document.addEventListener('webkitpointerlockerror', errorCallback, false);
+// }
 
 var makePointer = function() {
     var chromeConnectPointer = chrome.extension.getURL('icons/arrow-cursor.png');
     var image = document.createElement('image');
     image.id = 'newPointer_chromeConnect';
     image.src = chromeConnectPointer;
+    image.style.left = currentX +'px';
+    image.style.top = currentY +'px';
     document.body.appendChild(image);
 };
 
