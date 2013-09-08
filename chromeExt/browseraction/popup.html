@@ -7,18 +7,23 @@
 <script type="text/javascript" src="qrcode.min.js"></script>
 </head>
 <body>
-<section>
-  <a href="#" class="iobutton" id="socket-connect-btn">&#xF011;</a>
-  <span></span>
-</section>
-<div id="qrcode">
-  <div id="refreshConnection"><img src="./img/refresh-browser.png" class="refresh-browser"/></div>
-</div><br>
-<div id="connectID"></div>
-<span id="centerBtn">
-  <button type="button" id="mouseControl" class="mouseControl-btn">Pointer On</button>
-  <button type="button" id="mouseControlOff" class="mouseControl-btn">Pointer Off</button>
-</span>
+<div class="mainContainer">
+  <h1 class="chromeConnect">ChromeConnect</h1>
+  <section>
+    <a href="#" class="iobutton" id="socket-connect-btn">&#xF011;</a>
+    <span></span>
+  </section>
+  <div id="qrcode_container">
+    <div id="qrcode">
+      <div id="refreshConnection"><img src="./img/refresh-browser.png" class="refresh-browser"/></div>
+    </div>
+    <div id="centerBtn">
+      <div id="connectID"></div>
+      <button type="button" id="mouseControl" class="mouseControl-btn">Pointer On</button>
+      <button type="button" id="mouseControlOff" class="mouseControl-btn">Pointer Off</button>
+    </div>
+  </div>
+</div>
 <script type="text/javascript" src="popup.js"></script>
 </body>
 </html>

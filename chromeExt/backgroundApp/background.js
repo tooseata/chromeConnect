@@ -1,6 +1,6 @@
 //PRODUCTION_
 //var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-var socketserver = 'http://10.0.1.32:8080';
+var socketserver = 'http://10.0.1.42:8080';
 var channelTabs = [];
 var activeTab;
 var storage = chrome.storage.local;
@@ -13,6 +13,11 @@ storage.remove("socketState", function(confirm){
 storage.remove("currentToken", function(confirm){
   console.log('Cleared Current Token');
 });
+
+storage.remove("synthMouse", function(confirm){
+  console.log('Cleared Current Token');
+});
+
 
 chrome.extension.onConnect.addListener(function(port) {
         var tabId = port.sender.tab.id;

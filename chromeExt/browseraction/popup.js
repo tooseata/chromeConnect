@@ -7,7 +7,7 @@ window.onload = function() {
         $('#socket-connect-btn').toggleClass('off');
     } else if (data.socketState === 1){
         $('#socket-connect-btn').toggleClass('on');
-        $('#qrcode').css("visibility", "visible");
+        $('#qrcode_container').css("visibility", "visible");
     } else {
         $('#socket-connect-btn').toggleClass('off');
     }
@@ -19,16 +19,29 @@ window.onload = function() {
     }
   });
 
+  storage.get("synthMouse", function(data){
+    if (data.synthMouse === 0){
+        $('#mouseControl').show();
+        $('#mouseControlOff').hide();
+    } else if (data.synthMouse === 1) {
+        $('#mouseControl').hide();
+        $('#mouseControlOff').show();
+    } else {
+        $('#mouseControl').show();
+        $('#mouseControlOff').hide();
+    }
+  });
+
   document.getElementById("socket-connect-btn").onclick = function() {
     if($('#socket-connect-btn').hasClass('on')){
-      $('#qrcode').css("visibility", "hidden");
+      $('#qrcode_container').css("visibility", "hidden");
       // Sends to background script
       chrome.extension.sendMessage({
         type: "disconnectSocketConnection"
       });
       window.close();
     } else {
-      $('#qrcode').css("visibility", "visible");
+      $('#qrcode_container').css("visibility", "visible");
       chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
         var current = tabs[0];
         var tabID = current.id;
@@ -98,7 +111,7 @@ var qrcode = new QRCode("qrcode", {
 var makeCode = function (token) {
   //PRODUCTION_
   //var url = "http://chromeconnect.nodejitsu.com/";
-  var url = "http://10.0.1.32:8080/"
+  var url = "http://10.0.1.42:8080/"
   var newUrl = url + token;
   qrcode.makeCode(newUrl);
   $('#connectID').text(newUrl);
