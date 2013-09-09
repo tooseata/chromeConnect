@@ -715,6 +715,7 @@ pre code {
 .container {
   margin-right: auto;
   margin-left: auto;
+  padding: 5px;
 }
 
 .container:before,
@@ -2884,7 +2885,7 @@ button.close {
   font-size: 18px;
   font-weight: 500;
   line-height: 20px;
-  color: #777777;
+  color: #fff;
   text-align: center;
 }
 
@@ -2996,7 +2997,7 @@ button.close {
 }
 
 .navbar-inverse .navbar-brand {
-  color: #999999;
+  color: #fff;
 }
 
 .navbar-inverse .navbar-brand:hover,

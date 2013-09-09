@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
     <meta charset="utf-8">
-    <title>Chrome Connect (Alpha)</title>
+    <title>chromeConnect (Alpha)</title>
     <meta name="description" content="">
     <meta name="keywords" content="websockets, chromeConnect, Chrome, webstore, extension">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -26,11 +26,11 @@
 
     <div class="navbar navbar-inverse navbar-static-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Chrome Connect</a>
+        <a class="navbar-brand">chromeConnect</a>
         <div class="nav-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="https://chrome.google.com/webstore/category/extensions" target="ext">Chrome App Store</a></li>
-            <li><a href="https://github.com/tooseata/" target="ext">Github</a></li>
+          <ul class="nav navbar-nav pull-right">
+            <li><a href="http://bit.ly/15eVEc3" target="ext">Download on Chrome Web Store</a></li>
+            <li><a href="http://bit.ly/186mu8N" target="ext">Contribute to Open Source Project</a></li>
           </ul>
         </div>
       </div>
@@ -38,84 +38,55 @@
   </div>
 </div>
 
-
-<!-- Carousel
-================================================== -->
-<div id="myCarousel" class="carousel slide">
-  <!-- Indicators -->
-  <ol class="carousel-indicators">
-    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#myCarousel" data-slide-to="1"></li>
-    <li data-target="#myCarousel" data-slide-to="2"></li>
-  </ol>
-  <div class="carousel-inner">
-    <div class="item active">
-      <img src="http://placehold.it/1500X500">
-      <div class="container">
-        <div class="carousel-caption">
-          <h1>Gester Based Browser Control</h1>
-          <p>Multi direction swip control</p>
-        </div>
+<header id="head-top">
+      <div class="jumbotron">
+        <img class="marquee-image pull-left" style="margin-right:5px" src="http://s21.postimg.org/42vzrb8b7/chrome_Connect_logo.png">
+        <h2 class="featurette-heading-marquee"> <strong>chromeConnect</strong> <br> <span class="text-muted-marquee">Take control of Chrome from your mobile device</span></h2>
       </div>
-    </div>
-    <div class="item">
-      <img src="http://placehold.it/1500X500">
-      <div class="container">
-        <div class="carousel-caption">
-          <h1>Zooming / Pinching</h1>
-          <p>Pitch your glasses and start zooming into text with ease.</p>
-        </div>
-      </div>
-    </div>
-    <div class="item">
-      <img src="http://placehold.it/1500X500">
-      <div class="container">
-        <div class="carousel-caption">
-          <h1>Native Mouse Control</h1>
-          <p>Use a presentation mouse to point / click on elements on any webpage</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-  <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-</div><!-- /.carousel -->
-
-
-
+</header>
 <!-- Marketing messaging and featurettes
 ================================================== -->
 <!-- Wrap the rest of the page in another container to center all the content. -->
 
 <div class="container marketing">
 
-  <!-- START THE FEATURETTES -->
-
-  <hr class="featurette-divider">
-
   <div class="featurette">
     <img class="featurette-image img-circle pull-left" src="http://getbootstrap.com/2.3.2/assets/img/examples/browser-icon-chrome.png">
-    <h2 class="featurette-heading">Chrome Extension <span class="text-muted">Free and open source!</span></h2>
-    <p class="lead">Control any page from you favortie web browser.</p>
+    <h2 class="featurette-heading">Turn your touchable phone or tablet device into a mouse <span class="text-muted">to control browsing in Chrome.</span></h2>
+    <p class="lead">This extension captures gesture interactions taken from a paired mobile or tablet device, and incorporates the gesturing data into the navigation experience within your browser. ChromeConnect is an <a href="https://github.com/tooseata/chromeConnect" target="ext">open source project</a> and is currently in alpha testing phase.</p>
   </div>
 
+    <hr class="featurette-divider">
+    <h2 class="featurette-heading">Gestering <span class="text-muted">Feature Support</span></h2>
+  <div class="row">
+    <div class="span4">
+      <h2>One Finger Mouse with Tap Click</h2>
+      <img class="img-square" src="http://s10.postimg.org/dhuorizc9/mouse.jpg">
+      <p>On the scroll tab use a one finger drag to move a synthetic mouse pointer around the page. Make sure to enable the pointer first from the settings in the extension drop down. A tap on your controller screen will create a click on any textlink or button within the DOM.</p>
+    </div><!-- /.span4 -->
+    <div class="span4">
+      <h2>Pinch Zoom In / Out</h2>
+      <img class="img-square" src="http://s16.postimg.org/scv1pfxhx/pinch.jpg">
+      <p>From the pinch tab on your device a use normal pinch command to zoom into your page. Pinching out will return to the default browser zoom level. A tap on this screen will enable a quick zoom (turn off by performing a double tab command).</p>
+    </div><!-- /.span4 -->
+    <div class="span4">
+      <h2>Two Finger Page Scroll</h2>
+      <img class="img-square" src="http://s21.postimg.org/6jpsbg34n/scroll.jpg">
+      <p>Use a two-finger scroll to move up and down the page. Three fingers up or down will bring you to the top / bottom of the page you are viewing.</p>
+    </div><!-- /.span4 -->
+  </div><!-- /.row -->
 
   <hr class="featurette-divider">
-
-  <!-- <div class="featurette">
-    <img class="featurette-image img-circle pull-right" src="http://placehold.it/512">
-    <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Flatness.</span></h2>
-    <p class="lead">A big design trend for 2013 is "flat" design. Gone are the days of excessive gradients and shadows. Designers are producing cleaner flat designs, and Bootstrap 3 takes advantage of this minimalist trend.</p>
+  <h2 class="featurette-heading">Video <span class="text-muted">Demo</span></h2>
+  <div class="video-container">
+    <iframe src="//player.vimeo.com/video/73983362" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
   </div>
- -->
+
   <hr class="featurette-divider">
-
-  <!-- /END THE FEATURETTES -->
-
 
   <!-- FOOTER -->
   <footer>
-    <p>Created by Chris Sita <a href="http://www.linkedin.com/in/chrissita">LinkedIn</a></p>
+    <p>Created by Chris Sita <a href="http://linkd.in/15Ro1J0" target="ext">LinkedIn</a></p>
   </footer>
 
 </div><!-- /.container -->
