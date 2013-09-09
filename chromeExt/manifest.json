@@ -1,15 +1,12 @@
 {
   "name": "ChromeConnect",
-
   "version": "0.1",
-
   "manifest_version": 2,
-
-  "description": "Web based Browser Navigation Control",
+  "description": "Turn your touchable phone or tablet device into a mouse to control browsing in Chrome.",
 
   "browser_action": {
-    "default_title": "Chrome Connect Settings",
-    "default_icon": "icons/icon.png", 
+    "default_title": "chromeConnect",
+    "default_icon": "icons/icon.png",
     "default_popup": "browseraction/popup.html"
   },
 
@@ -18,7 +15,7 @@
     "persistent": true
   }, 
 
-  "permissions": ["tabs","activeTab","storage"],
+  "permissions": ["tabs","activeTab","storage","notifications"],
 
   "content_scripts":[
     {
@@ -26,7 +23,9 @@
       "css": ["pointer_chromeConnect.css"],
       "js": ["script.js", "zoom.js"]
     }
-  ], 
+  ],
+
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
 
   "web_accessible_resources": ["backgroundApp/socketio.js", "backgroundApp/background.js", "icons/arrow-cursor.png"]
 }

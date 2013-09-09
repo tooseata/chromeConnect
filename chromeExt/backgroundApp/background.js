@@ -1,6 +1,5 @@
 //PRODUCTION_
-//var socketserver = 'http://chromeconnect.nodejitsu.com:80';
-var socketserver = 'http://10.0.1.42:8080';
+var socketserver = 'http://chromeconnect.nodejitsu.com:80';
 var channelTabs = [];
 var activeTab;
 var storage = chrome.storage.local;
@@ -39,6 +38,26 @@ chrome.tabs.onActivated.addListener(function(info) {
   }
 });
 
+var enableMouseNotification = {
+  type: "list",
+  title: "Enabling pointer control",
+  message: "Press your ESC key to exit mouse control",
+  iconUrl: "../icons/icon.png",
+  items: [{ title: "Step 1", message: "Click anywhere in browser."},
+          { title: "Step 2", message: "Click 'Allow' if prompted."},
+          { title: "Step 3", message: "A red cursor will appear."}]
+}
+
+var gesterHelp = {
+  type: "list",
+  title: "Types of Gesters Supported",
+  message: "Currently support the following: mouse control, swiping and zooming",
+  iconUrl: "../icons/icon.png",
+  items: [{ title: "Mouse Control", message: "One Finger drag"},
+          { title: "Swiping", message: "Two Finger swipe up/down"},
+          { title: "Zooming", message: "Pinch in/out on Pinch Tab"}]
+}
+
 
 // coming from the popup
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -59,6 +78,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 
         case "enableMouseControl":
         storage.set({"synthMouse":1});
+        chrome.notifications.create("enableMouse", enableMouseNotification, function (id){
+          console.log("enableMouseControl notification sucess");
+        })
         socketConnection(request.type, request.tabID, request.windowID);
         break;
 
@@ -85,6 +107,12 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
           activeTab = tabs[0].id;
           chrome.tabs.sendMessage(activeTab, {"type": "refreshPage"});
         });
+        break;
+
+        case "gesterHelp":
+        chrome.notifications.create("gesterHelp", gesterHelp, function (id){
+          console.log("gesterHelp notification sucess");
+        })
         break;
 
     }

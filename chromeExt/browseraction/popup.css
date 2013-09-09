@@ -21,6 +21,18 @@ h1.chromeConnect{
   font-family: arial;
 }
 
+a#gesterHelp{
+  color: black;
+  text-decoration: underline;
+  font-family: "arial";
+}
+
+a:hover#gesterHelp{
+  color: black;
+  text-decoration: none;
+  font-family: "arial";
+}
+
 #qrcode{
   width:100px; 
   height:100px; 

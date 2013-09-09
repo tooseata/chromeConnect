@@ -1,6 +1,6 @@
 jQuery.event.props.push("touches");
 //PRODUCTION_
-var socketUrl = 'http://' + location.hostname + ':8080';
+var socketUrl = 'http://' + location.hostname + ':80';
       var isMobileDevice = Modernizr.touch;
       var socket = io.connect(socketUrl);
 

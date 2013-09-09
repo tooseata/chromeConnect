@@ -32,8 +32,9 @@ window.onload = function() {
     }
   });
 
-  document.getElementById("socket-connect-btn").onclick = function() {
+  document.getElementById("socket-connect-btn").onclick = function(e) {
     if($('#socket-connect-btn').hasClass('on')){
+      _gaq.push(['_trackEvent', e.target.id, 'clicked']);
       $('#qrcode_container').css("visibility", "hidden");
       // Sends to background script
       chrome.extension.sendMessage({
@@ -100,6 +101,21 @@ window.onload = function() {
       });
     });
   };
+
+  document.getElementById("gesterHelp").onclick = function() {
+    chrome.tabs.query({active:true, currentWindow:true}, function(tabs){
+      var current = tabs[0];
+      var tabID = current.id;
+      var windowID = current.windowId;
+
+      // Sends to background script
+      chrome.extension.sendMessage({
+            "type": "gesterHelp",
+            "windowID": windowID,
+            "tabID": tabID
+      });
+    });
+  };
 };
 
 var qrcode = new QRCode("qrcode", {
@@ -110,8 +126,7 @@ var qrcode = new QRCode("qrcode", {
 // jQuery 
 var makeCode = function (token) {
   //PRODUCTION_
-  //var url = "http://chromeconnect.nodejitsu.com/";
-  var url = "http://10.0.1.42:8080/"
+  var url = "http://chromeconnect.jit.su/";
   var newUrl = url + token;
   qrcode.makeCode(newUrl);
   $('#connectID').text(newUrl);
@@ -143,6 +158,16 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   }
 });
 
+// Google Analytics Tracker
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-43870655-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
 
 
 

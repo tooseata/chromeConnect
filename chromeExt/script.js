@@ -2,8 +2,8 @@
 var port = chrome.runtime.connect();
 var tempX;
 var tempY;
-var tempClientX = 10;
-var tempClientY = 10;
+var tempClientX = window.outerWidth / 2;
+var tempClientY = window.outerHeight / 2;
 var currentX = 10;
 var currentY = 10;
 var windowWidth = document.body.scrollWidth;
@@ -32,7 +32,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   } else if(request.type === "swipe" && request.fingerCount === 3){
       pageToporBottom(request.swipeDirection, request.swipDistance, request.swipeDuration);
   } else if (request.type === "navigation"){
-      movePointer(request.xVal, request.yVal, "syntheticDirection");
+      movePointer(request.xVal * 2, request.yVal * 2, "syntheticDirection");
   } else if (request.type === "fixedPointerOn"){
       fixedPointerOn();
   } else if (request.type === "fixedPointerOff"){
@@ -215,13 +215,6 @@ element.addEventListener("click", function (e) {
   }
 });
 
-// var forcePointer = function(){
-//   var pointer = document.getElementById("newPointer_chromeConnect");
-//   makePointer();
-//   document.addEventListener('webkitpointerlockchange', changeCallback, false);
-//   document.addEventListener('webkitpointerlockerror', errorCallback, false);
-// }
-
 var makePointer = function() {
     var chromeConnectPointer = chrome.extension.getURL('icons/arrow-cursor.png');
     var image = document.createElement('image');
@@ -309,7 +302,7 @@ var createClick = function(){
     }
 };
 
-function changeCallback() {
+var changeCallback = function() {
     //Check for element whether locked is expected element or not
     if (document.webkitPointerLockElement == element) {
         // Pointer was just locked
@@ -324,7 +317,7 @@ function changeCallback() {
     }
 }
 
-function errorCallback(e) {
+var errorCallback = function (e) {
     //Log Errors
     console.log(e);
 }
