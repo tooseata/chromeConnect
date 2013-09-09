@@ -1,5 +1,5 @@
 //PRODUCTION_
-var socketserver = 'http://chromeconnect.nodejitsu.com:80';
+var socketserver = 'http://chromeconnect.jit.su:80';
 var channelTabs = [];
 var activeTab;
 var storage = chrome.storage.local;

@@ -48,10 +48,7 @@ io.sockets.on('connection', function(socket){
     // Emit Gamecode to client to display to user
     socket.emit("desktopAccessToken", gameCode);
 
-    console.log(gameCode);
-    console.log("Session Tab: " + sessionTab + " || Session Window: " + sessionWindow);
   }); // initiateDesktop connection 
-
 
   socket.on('initiateController', function(data){
     var isValidSession = data.sessionHash;
@@ -66,53 +63,28 @@ io.sockets.on('connection', function(socket){
   }); // initiateController connection 
 
   socket.on('swipe', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("swipe", {"direction": data.direction, "fingerCount" : data.fingerCount, "distance":data.distance, "duration":data.duration});
-    }
-  });
-
-  socket.on('swipeStatus', function(data){
-    var token = data.sessionHash;
-    // if(token in socketCodes){
-    //   socketCodes[token].emit("swipeStatus", {"distance": data.distance});
-    // }
+    socketCodes[data.sessionHash].emit("swipe", {"direction": data.direction, "fingerCount" : data.fingerCount, "distance":data.distance, "duration":data.duration});
   });
 
   socket.on('move', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("move", {"dx": data.dx, "dy" : data.dy});
-    }
+    socketCodes[data.sessionHash].emit("move", {"dx": data.dx, "dy" : data.dy});
   });
 
   socket.on('pinchIn', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
-    }
+    socketCodes[data.sessionHash].emit("pinchIn", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
   });
 
 
   socket.on('pinchOut', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("pinchOut", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
-    }
+    socketCodes[data.sessionHash].emit("pinchOut", {"direction": data.direction, "distance" : data.distance, "zoomScale" : data.zoomScale });
   });
 
   socket.on('pinchInTotal', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("pinchInTotal", {"zoomScale": data.zoomScale});
-    }
+    socketCodes[data.sessionHash].emit("pinchInTotal", {"zoomScale": data.zoomScale});
   });
 
   socket.on('pinchOutTotal', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("pinchOutTotal", {"zoomScale": data.zoomScale});
-    }
+    socketCodes[data.sessionHash].emit("pinchOutTotal", {"zoomScale": data.zoomScale});
   });
 
   socket.on('zoomTapUndo', function(data){
@@ -123,29 +95,19 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('zoomTap', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("zoomTap", {});
-    }
+    socketCodes[data.sessionHash].emit("zoomTap", {});
   });
 
   socket.on('click', function(data){
-    var token = data.sessionHash;
-    if(token in socketCodes){
-      socketCodes[token].emit("click", {});
-    }
+    socketCodes[data.sessionHash].emit("click", {});
   });
 }); // Main Connect
 
 io.sockets.on('disconnect', function(socket){
-  console.log('YOU BEEN KILLED');
   if(socket.browserToken in socketCodes){
      delete socketCodes[socket.browserToken];
    }
-}); 
-server.listen(8080);
+});
 
-
-
-
-
+//PRODUCTION_
+server.listen(80);

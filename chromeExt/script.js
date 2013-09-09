@@ -32,7 +32,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
   } else if(request.type === "swipe" && request.fingerCount === 3){
       pageToporBottom(request.swipeDirection, request.swipDistance, request.swipeDuration);
   } else if (request.type === "navigation"){
-      movePointer(request.xVal * 2, request.yVal * 2, "syntheticDirection");
+      movePointer(request.xVal * 1.7, request.yVal * 1.7, "syntheticDirection");
   } else if (request.type === "fixedPointerOn"){
       fixedPointerOn();
   } else if (request.type === "fixedPointerOff"){
