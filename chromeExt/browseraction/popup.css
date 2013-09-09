@@ -1,5 +1,4 @@
 body {
-  /*background: url('img/micro_carbon.png');*/
   margin: 0px;
 }
 
@@ -45,7 +44,7 @@ a:hover#gesterHelp{
   color: black;
   font-size: 17px;
   text-align: center;
-  font-family: "FontAwesome";
+  font-family: "arial";
   background: #ccc;
   padding: 5px;
   margin-bottom: 7px;

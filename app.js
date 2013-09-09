@@ -27,6 +27,8 @@ app.get('/:connectid', function(req, res){
   res.sendfile(root + '/public/index.html');
 });
 
+io.set('transports', ['websocket']);
+
 io.sockets.on('connection', function(socket){
 
   socket.emit('checkDevice',{});
