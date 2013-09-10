@@ -12,10 +12,10 @@ Download the chrome extension here : [Chrome Web Store](http://bit.ly/15eVEc3)
 
 
 ## Contribute
-Please email me if you are interested in contributing. Chris (cs.sita.com)
+Please email me if you are interested in contributing. Chris (cs.sita@me.com)
 
 ## Bugs
-Please email Chris (cs.sita.com) for bugs / feature improvements. 
+Please email Chris (cs.sita@me.com) for bugs / feature improvements. 
 
 ## Tech Stack
 1. Node/Express
