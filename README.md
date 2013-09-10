@@ -6,7 +6,7 @@ ChromeConnect enables a user to turn their cell phone or tablet into a mouse to 
 
 This extension captures gesture interactions taken from a paired mobile or tablet device, and incorporates the gesturing data into the navigation experience within your browser. ChromeConnect is an open source project and is currently in alpha testing phase. 
 
-Please vist the website for more info: [chromeconnect.us](http://bit.ly/1d0fY2P)
+Please vist the website for more info: [chromeconnect.us](http://bit.ly/1amcFBP)
 
 Download the chrome extension here : [Chrome Web Store](http://bit.ly/15eVEc3)
 
@@ -22,8 +22,8 @@ Please email Chris (cs.sita.com) for bugs / feature improvements.
 2. Socket.io
 3. Google Chrome Extensions API
 4. Grunt
-5. 3rd Party Libaries 
-* [BootStrap](https://http://getbootstrap.com/)
-* [TouchSwipe-Jquery-Plugin](https://github.com/mattbryson/TouchSwipe-Jquery-Plugin)
-* [IOCSS](https://github.com/lazd/iOCSS)
-* [Zoom.js](http://lab.hakim.se/zoom-js)
+5. 3rd Party Libaries
+    * [BootStrap](https://http://getbootstrap.com/)
+    * [TouchSwipe-Jquery-Plugin](https://github.com/mattbryson/TouchSwipe-Jquery-Plugin)
+    * [IOCSS](https://github.com/lazd/iOCSS)
+    * [Zoom.js](http://lab.hakim.se/zoom-js)

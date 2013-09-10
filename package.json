@@ -1,6 +1,6 @@
 {
   "name": "chromeConnect",
-  "version": "0.0.1-87",
+  "version": "0.0.1-88",
   "scripts": {
     "start": "node app.js"
   },
